@@ -24,14 +24,14 @@ def MapParserInner(PARENT,chrom):
 				par_start.append(int(line[par]))
 				ref_start.append(int(line[0]))
 	for idx, val in enumerate(par_start):
-		# if last entry, set block to large number / or chromosome length.
+		# if last entry, set block to large number (should be end of chromosome)
 		if idx == len(par_start)-1:
 			par_end.append(int(par_start[idx]*2))
 		else:
 		# parental block end 	
 			par_end.append(int(par_start[idx+1])-1)
 	ref_end = np.array(ref_start) + (np.array(par_end)- np.array(par_start))
-	# a dictionary of three lists reference start position, parental start / end
+	# a dictionary of three lists reference start and end position, parental start and end position.
 	MapInner = {'ref.start':ref_start,'ref.end':ref_end,'par.start':par_start,'par.end':par_end}
 	return MapInner
 
@@ -41,6 +41,7 @@ def MapParser(PARENT):
 	for file in glob.glob("*.map"):
 		chr=file.split('_')[0]
 		Map_object[chr]=MapParserInner(PARENT,chrom=file)
+	#dictionary, key = chromosome, values are a dictionary of blocks.
 	return Map_object
 
 
@@ -70,50 +71,32 @@ paternal_map=MapParser(PARENT='P')
 pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 
-qname_pat={}
-chr=''
-for read_pat in pat:
-	if read_pat.is_read1:
-		qname=read_pat.qname+'_1'
-		if read_pat.pos == -1:
-			chr=0
-			qname_pat[qname] = 0, read_pat.mapping_quality	
-		else:
-			chr=read_pat.reference_name.split('_')[0]
-			qname_pat[qname] = translateMappedPosition(chr,read_pat.pos+1,PARENT='P'), read_pat.mapping_quality
+
+def TranslateAlignmentPos(PARENT):
+	parental2ref={}
+	chr=''
+	if PARENT == "M":
+		parent = mat
 	else:
-		qname=read_pat.qname+'_2'
-		if read_pat.pos == -1:
-			chr=0
-			qname_pat[qname] = 0, read_pat.mapping_quality
+		parent = pat
+	for read in parent:
+		if read.is_read1:
+			qname=read.qname+'_1'
+			if read.pos == -1:
+				chr=0
+				parental2ref[qname] = 0, read.mapping_quality	
+			else:
+				chr=read.reference_name.split('_')[0]
+				parental2ref[qname] = translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
 		else:
-			chr=read_pat.reference_name.split('_')[0]
-			qname_pat[qname] = translateMappedPosition(chr,read_pat.pos+1,PARENT='P'), read_pat.mapping_quality
-
-qname_mat={}
-for read_mat in mat:
-	if read_mat.is_read1:
-		qname=read_mat.qname+'_1'
-		if read_mat.pos == -1:
-			chr=0
-			qname_mat[qname] = 0, read_mat.mapping_quality
-		else:
-			chr=read_mat.reference_name.split('_')[0]
-			qname_mat[qname] = translateMappedPosition(chr,read_mat.pos+1,PARENT='M'), read_mat.mapping_quality
-	else:
-		qname=read_mat.qname+'_2'
-		if read_mat.pos == -1:
-			chr=0
-			qname_mat[qname] = 0, read_mat.mapping_quality
-		else:
-			chr=read_mat.reference_name.split('_')[0]
-			qname_mat[qname] = translateMappedPosition(chr,read_mat.pos+1,PARENT='M'), read_mat.mapping_quality
-
-
-
-
-
-
+			qname=read.qname+'_2'
+			if read.pos == -1:
+				chr=0
+				parental2ref[qname] = 0, read.mapping_quality
+			else:
+				chr=read.reference_name.split('_')[0]
+				parental2ref[qname] = translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
+	return parental2ref
 
 
 
