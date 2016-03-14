@@ -87,7 +87,7 @@ def TranslateAlignmentPos(PARENT):
 				parental2ref[qname] = 0, read.mapping_quality	
 			else:
 				chr=read.reference_name.split('_')[0]
-				parental2ref[qname] = translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
+				parental2ref[qname] = chr, translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
 		else:
 			qname=read.qname+'_2'
 			if read.pos == -1:
@@ -95,8 +95,12 @@ def TranslateAlignmentPos(PARENT):
 				parental2ref[qname] = 0, read.mapping_quality
 			else:
 				chr=read.reference_name.split('_')[0]
-				parental2ref[qname] = translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
+				parental2ref[qname] = chr, translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
 	return parental2ref
+
+
+mat2ref = TranslateAlignmentPos(PARENT='M')
+pat2ref = TranslateAlignmentPos(PARENT='P')
 
 
 
