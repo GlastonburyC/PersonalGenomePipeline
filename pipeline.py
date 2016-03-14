@@ -3,6 +3,7 @@ import sys
 import pysam
 from collections import defaultdict
 import numpy as np
+import glob
 
 # Take a map file as input - create blocks for either haplotype to map read to
 def MapParserInner(PARENT,chrom):
@@ -68,8 +69,8 @@ maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
 
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat = pysam.Samfile('paternal/Paternal.Aligned.sortedByCoord.out.bam', 'rb')
+mat = pysam.Samfile('maternal/Maternal.Aligned.sortedByCoord.out.bam', 'rb')
 
 
 def TranslateAlignmentPos(PARENT):
