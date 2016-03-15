@@ -111,9 +111,11 @@ for read in parent:
 		else:
 			chrom=read.reference_name.split('_')[0]
 			if chrom == "chrM":
-				
-			read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
-			read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
+				read.pos=read.pos+1
+				read.mpos=read.mpos+1
+			else:
+				read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
+				read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
 			read.template_length=read.mpos-read.pos-49
 			parental2ref[qname] = chrom, read.pos, read.mpos, read.mapping_quality, read.template_length
 #return parental2ref
