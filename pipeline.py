@@ -49,7 +49,7 @@ def MapParser(PARENT):
 def translateMappedPosition(chr,cord,PARENT):
 	# This function translates a reads mapping coordinate to that of the universal
 	# reference genome. If the read maps within an insertion, it is assigned the 
-	# last position unchanged in the reference (beginning of insertion).
+	# last position unchanged in the reference (beginning of the insertion).
 	ref_cord=[]
 	if PARENT=="M":
 		pat_map = maternal_map
@@ -69,11 +69,14 @@ maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
 
-pat = pysam.Samfile('paternal/Paternal.Aligned.sortedByCoord.out.bam', 'rb')
-mat = pysam.Samfile('maternal/Maternal.Aligned.sortedByCoord.out.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
 
 
 def TranslateAlignmentPos(PARENT):
+	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
+	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
+	# I have added whether the read is mate_1 or mate_2.
 	parental2ref={}
 	chr=''
 	if PARENT == "M":
@@ -88,7 +91,10 @@ def TranslateAlignmentPos(PARENT):
 				parental2ref[qname] = 0, read.mapping_quality	
 			else:
 				chr=read.reference_name.split('_')[0]
-				parental2ref[qname] = chr, translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
+				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
+				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
+				read.template_length=read.mpos-read.pos+49
+				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
 		else:
 			qname=read.qname+'_2'
 			if read.pos == -1:
@@ -96,7 +102,10 @@ def TranslateAlignmentPos(PARENT):
 				parental2ref[qname] = 0, read.mapping_quality
 			else:
 				chr=read.reference_name.split('_')[0]
-				parental2ref[qname] = chr, translateMappedPosition(chr,read.pos+1,PARENT=PARENT), read.mapping_quality, read.template_length
+				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
+				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
+				read.template_length=read.mpos-read.pos+49
+				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
 	return parental2ref
 
 
