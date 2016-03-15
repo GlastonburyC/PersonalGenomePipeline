@@ -72,44 +72,51 @@ maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
 
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 
 
 def TranslateAlignmentPos(PARENT):
 	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
 	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
 	# I have added whether the read is mate_1 or mate_2.
-	parental2ref={}
-	chr=''
-	if PARENT == "M":
-		parent = mat
-	else:
-		parent = pat
-	for read in parent:
-		if read.is_read1:
-			qname=read.qname+'_1'
-			if read.pos == -1: # read position will be 0 (hence -1 on zero-base) if unmapped. this handles it well.
-				chr=0
-				parental2ref[qname] = 0, read.mapping_quality	
-			else:
-				chr=read.reference_name.split('_')[0]   # format is chrX_parent
-				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
-				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
-				read.template_length=read.mpos-read.pos+49 # recompute template_length with ref coordinate update
-				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
+parental2ref={}
+chrom=''
+if PARENT == "M":
+	parent = mat
+else:
+	parent = pat
+
+for read in parent:
+	if read.is_read1:
+		qname=read.qname+'_1'
+		if read.pos == -1: # read position will be 0 (hence -1 on zero-base) if unmapped. this handles it well.
+			chrom=0
+			parental2ref[qname] = 0, read.mapping_quality
 		else:
-			qname=read.qname+'_2'
-			if read.pos == -1:
-				chr=0
-				parental2ref[qname] = 0, read.mapping_quality
+			chrom=read.reference_name.split('_')[0] # format is chrX_parent
+			if chrom =="chrM":
+				read.pos=read.pos+1
+				read.mpos=read.mpos+1
 			else:
-				chr=read.reference_name.split('_')[0]
-				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
-				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
-				read.template_length=read.mpos-read.pos+49 
-				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
-	return parental2ref
+				read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
+				read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
+			read.template_length=read.mpos-read.pos+49 # recompute template_length with ref coordinate update
+			parental2ref[qname] = chrom, read.pos, read.mpos, read.mapping_quality, read.template_length
+	else:
+		qname=read.qname+'_2'
+		if read.pos == -1:
+			chrom=0
+			parental2ref[qname] = 0, read.mapping_quality
+		else:
+			chrom=read.reference_name.split('_')[0]
+			if chrom == "chrM":
+				
+			read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
+			read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
+			read.template_length=read.mpos-read.pos-49
+			parental2ref[qname] = chrom, read.pos, read.mpos, read.mapping_quality, read.template_length
+#return parental2ref
 
 
 mat2ref = TranslateAlignmentPos(PARENT='M')
