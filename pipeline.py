@@ -89,14 +89,14 @@ def TranslateAlignmentPos(PARENT):
 	for read in parent:
 		if read.is_read1:
 			qname=read.qname+'_1'
-			if read.pos == -1:
+			if read.pos == -1: # read position will be 0 (hence -1 on zero-base) if unmapped. this handles it well.
 				chr=0
 				parental2ref[qname] = 0, read.mapping_quality	
 			else:
-				chr=read.reference_name.split('_')[0]
+				chr=read.reference_name.split('_')[0]   # format is chrX_parent
 				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
 				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
-				read.template_length=read.mpos-read.pos+49
+				read.template_length=read.mpos-read.pos+49 # recompute template_length with ref coordinate update
 				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
 		else:
 			qname=read.qname+'_2'
@@ -107,7 +107,7 @@ def TranslateAlignmentPos(PARENT):
 				chr=read.reference_name.split('_')[0]
 				read.pos=translateMappedPosition(chr,read.pos+1,PARENT=PARENT)
 				read.mpos=translateMappedPosition(chr,read.mpos+1,PARENT=PARENT)
-				read.template_length=read.mpos-read.pos+49
+				read.template_length=read.mpos-read.pos+49 
 				parental2ref[qname] = chr, read.pos, read.mpos, read.mapping_quality, read.template_length
 	return parental2ref
 
