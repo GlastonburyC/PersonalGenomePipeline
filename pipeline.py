@@ -7,6 +7,13 @@ import pysam
 from collections import defaultdict
 import numpy as np
 import glob
+from itertools import chain
+
+#### temporary function to test timing ####
+if __name__=='__main__':
+    from timeit import Timer
+    t = Timer(lambda: translateMappedPosition('chr1',28592,PARENT='M'))
+    print t.timeit(number=1)
 
 # Take a map file as input - create blocks for either haplotype to map read to
 def MapParserInner(PARENT,chrom):
@@ -18,7 +25,7 @@ def MapParserInner(PARENT,chrom):
 		par=2
 	else:
 		par=1
-	# open chromosomal map file
+		# open chromosomal map file
 	with open(chrom,'r') as mapping_file:
 		lines = mapping_file.readlines()
 		for i in range(1,len(lines)):
@@ -35,8 +42,12 @@ def MapParserInner(PARENT,chrom):
 		# parental block end 	
 			par_end.append(int(par_start[idx+1])-1)
 	ref_end = np.array(ref_start) + (np.array(par_end)- np.array(par_start))
+	ref_blocks = zip(ref_start,ref_end)
+	ref_blocks = list(chain(*ref_blocks))
+	par_blocks = zip(par_start, par_end) 
+	par_blocks = list(chain(*par_blocks))
 	# a dictionary of three lists reference start and end position, parental start and end position.
-	MapInner = {'ref.start':ref_start,'ref.end':ref_end,'par.start':par_start,'par.end':par_end}
+	MapInner = {'ref.blocks':ref_blocks,'par.blocks':par_blocks}
 	return MapInner
 
 def MapParser(PARENT):
@@ -58,14 +69,11 @@ def translateMappedPosition(chr,cord,PARENT):
 		pat_map = maternal_map
 	else:
 		pat_map = paternal_map
-	for i, block_start in enumerate(pat_map[chr]['par.start']):
-		block_end=pat_map[chr]['par.end'][i]
-		if block_start <= cord <= block_end:
-			# When considering indels - translate the position to the ref coordinate before indel
-			if pat_map[chr]['ref.start'][i] == 0:
-				ref_cord = pat_map[chr]['ref.end'][i-1]	
-			else:
-				ref_cord = cord-pat_map[chr]['par.start'][i]+pat_map[chr]['ref.start'][i]
+	match=bisect(pat_map[chr]['par.blocks'], cord)
+	if pat_map[chr]['ref.blocks'][match-1] == 0:
+		ref_cord = pat_map[chr]['ref.blocks'][match-2]
+	else:
+		ref_cord = cord-pat_map[chr]['par.blocks'][match]+pat_map[chr]['ref.blocks'][match]
 	return ref_cord
 
 maternal_map=MapParser(PARENT='M')
@@ -75,54 +83,71 @@ paternal_map=MapParser(PARENT='P')
 pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 
-
 def TranslateAlignmentPos(PARENT):
 	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
 	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
 	# I have added whether the read is mate_1 or mate_2.
-parental2ref={}
-chrom=''
-if PARENT == "M":
-	parent = mat
-else:
-	parent = pat
-
-for read in parent:
-	if read.is_read1:
-		qname=read.qname+'_1'
-		if read.pos == -1: # read position will be 0 (hence -1 on zero-base) if unmapped. this handles it well.
-			chrom=0
-			parental2ref[qname] = 0, read.mapping_quality
-		else:
-			chrom=read.reference_name.split('_')[0] # format is chrX_parent
-			if chrom =="chrM":
-				read.pos=read.pos+1
-				read.mpos=read.mpos+1
-			else:
-				read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
-				read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
-			read.template_length=read.mpos-read.pos+49 # recompute template_length with ref coordinate update
-			parental2ref[qname] = chrom, read.pos, read.mpos, read.mapping_quality, read.template_length
+	read_name=[]
+	pos=[]
+	mpos=[]
+	mapq=[]
+	chromosome=[]
+	isize=[]
+	chrom=''
+	if PARENT == "M":
+		parent = mat
 	else:
-		qname=read.qname+'_2'
-		if read.pos == -1:
-			chrom=0
-			parental2ref[qname] = 0, read.mapping_quality
-		else:
-			chrom=read.reference_name.split('_')[0]
-			if chrom == "chrM":
-				read.pos=read.pos+1
-				read.mpos=read.mpos+1
+		parent = pat
+
+	for read in parent.fetch(until_eof=True):
+		if read.is_read1:
+			qname=read.qname
+			read_name.append(qname)
+			if read.pos == -1:
+				chromosome.append(0)
+				pos.append(0)
+				mpos.append(0)
+				mapq.append(read.mapping_quality)
+				isize.append(read.template_length)
 			else:
-				read.pos=translateMappedPosition(chrom,read.pos+1,PARENT=PARENT)
-				read.mpos=translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT)
-			read.template_length=read.mpos-read.pos-49
-			parental2ref[qname] = chrom, read.pos, read.mpos, read.mapping_quality, read.template_length
-#return parental2ref
+				chrom=read.reference_name.split('_')[0]
+				if chrom =="chrM":
+					chromosome.append("chrM")
+					pos.append(read.pos+1)
+					mpos.append(read.mpos+1)
+				else:
+					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
+					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
+					isize.append(read.mpos-read.pos+49)
+					mapq.append(read.mapping_quality)
+		else:
+			qname=read.qname
+			read_name.append(qname)
+			if read.pos == -1:
+				chromosome.append(0)
+				mapq.append(read.mapping_quality)
+				isize.append(read.template_length)
+				pos.append(read.pos)
+				mpos.append(read.mpos)
+			else:
+				chrom=read.reference_name.split('_')[0]
+				if chrom == "chrM":
+					chromosome.append("chrM")
+					pos.append(read.pos+1)
+					mpos.append(read.mpos+1)
+				else:
+					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
+					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
+					isize.append(read.mpos-read.pos-49)
+					mapq.append(read.mapping_quality)
+	return read_name,chromosome,pos,mpos,mapq,isize
 
 
-mat2ref = TranslateAlignmentPos(PARENT='M')
-pat2ref = TranslateAlignmentPos(PARENT='P')
+read_mat,chrom_mat,pos_mat,mpos_mat,mapq_mat,isize_mat = TranslateAlignmentPos(PARENT='M')
+read_pat,chrom_pat,pos_pat,mpos_pat,mapq_pat,isize_pat = TranslateAlignmentPos(PARENT='P')
+
+
+
 
 
 
