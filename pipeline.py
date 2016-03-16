@@ -98,7 +98,6 @@ def TranslateAlignmentPos(PARENT):
 		parent = mat
 	else:
 		parent = pat
-
 	for read in parent.fetch(until_eof=True):
 		if read.is_read1:
 			qname=read.qname
@@ -115,11 +114,14 @@ def TranslateAlignmentPos(PARENT):
 					chromosome.append("chrM")
 					pos.append(read.pos+1)
 					mpos.append(read.mpos+1)
+					mapq.append(read.mapping_quality)
+					isize.append(read.mpos-read.pos+49)
 				else:
 					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
 					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
 					isize.append(read.mpos-read.pos+49)
 					mapq.append(read.mapping_quality)
+					chromosome.append(chrom)
 		else:
 			qname=read.qname
 			read_name.append(qname)
@@ -135,11 +137,14 @@ def TranslateAlignmentPos(PARENT):
 					chromosome.append("chrM")
 					pos.append(read.pos+1)
 					mpos.append(read.mpos+1)
+					mapq.append(read.mapping_quality)
+					isize.append(read.mpos-read.pos-49)
 				else:
 					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
 					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
 					isize.append(read.mpos-read.pos-49)
 					mapq.append(read.mapping_quality)
+					chromosome.append(chrom)
 	return read_name,chromosome,pos,mpos,mapq,isize
 
 
