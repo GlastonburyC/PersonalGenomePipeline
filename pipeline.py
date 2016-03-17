@@ -309,7 +309,7 @@ for mline in mat.fetch(until_eof=True):
 		pline.template_length=pline.mpos-pline.pos-49
 	if mline.qname == pline.qname:
 		if mline.pos == pline.pos:
-			if samePosition(mline.mapping_quality,pline.mapping_quality) == 0:
+			if samePosition(pline.mapping_quality,mline.mapping_quality) == 0:
 				 y = random.random()
 				 if y <0.5:
 				 	mline.tags+=[('HT','M_SRM')]
@@ -319,7 +319,7 @@ for mline in mat.fetch(until_eof=True):
 				 	pline.tags+=[('HT','P_SRM')]
 				 	print "Pat equal"
 				 	consensus.write(pline)
-			elif samePosition(mline.mapping_quality,pline.mapping_quality) == 1:
+			elif samePosition(pline.mapping_quality,mline.mapping_quality) == 1:
 				print "Pat equal greater"
 				pline.tags+=[('HT','P_SBM')]
 				consensus.write(pline)
