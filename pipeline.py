@@ -85,9 +85,6 @@ def translateMappedPosition(chr,cord,PARENT):
 		ref_cord = cord-pat_map[chr]['par.blocks'][match]+pat_map[chr]['ref.blocks'][match]
 	return ref_cord
 
-maternal_map=MapParser(PARENT='M')
-paternal_map=MapParser(PARENT='P')
-
 #def TranslateAlignmentPos(PARENT):
 #	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
 #	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
@@ -200,18 +197,6 @@ def PrimaryAlignedReads(bam_object):
 	return primary_reads,qname_out
 
 
-# Remove non-primary alignments
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-mat_primary, mat_qname = PrimaryAlignedReads(mat)
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-pat_primary, pat_qname = PrimaryAlignedReads(pat)
-
-# It's possible one haplotype has more reads than the other after removing secondary alignments
-# this is because split reads can have 1 or more primary alignments
-# this difference is tiny, for this sample, the haplotype BAMs differed by 3 reads!
-primary = set(mat_qname).intersection(pat_qname)
-
-
 def keepPrimaryAlignments(par_primary,primary):
 	par_primary_out=[]
 	par_primary_out_qname=[]
@@ -222,6 +207,23 @@ def keepPrimaryAlignments(par_primary,primary):
 		else:
 			pass
 	return par_primary_out, par_primary_out_qname
+
+##### END OF FUNCTIONS #####
+
+# Store maternal and paternal blocks relative to the reference.
+maternal_map=MapParser(PARENT='M')
+paternal_map=MapParser(PARENT='P')
+
+# Remove non-primary alignments
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+mat_primary, mat_qname = PrimaryAlignedReads(mat)
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat_primary, pat_qname = PrimaryAlignedReads(pat)
+
+# It's possible one haplotype has more reads than the other after removing secondary alignments
+# this is because split reads can have 1 or more primary alignments
+# this difference is tiny, for this sample, the haplotype BAMs differed by 3 reads!
+primary = set(mat_qname).intersection(pat_qname)
 
 # Paternal primary alignments
 pat_primary_out, pat_qname = keepPrimaryAlignments(pat_primary,primary)
