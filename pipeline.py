@@ -8,7 +8,7 @@ from collections import defaultdict
 import numpy as np
 import glob
 from itertools import chain
-
+import bisect
 #### temporary function to test timing ####
 if __name__=='__main__':
     from timeit import Timer
@@ -65,11 +65,18 @@ def translateMappedPosition(chr,cord,PARENT):
 	# reference genome. If the read maps within an insertion, it is assigned the 
 	# last position unchanged in the reference (beginning of the insertion).
 	ref_cord=[]
+	if chr =='chrM':
+		ref_cord=cord
+		return ref_cord
+	if chr == 0:
+		ref_cord=cord =1
+		return ref_cord
+	ref_cord=[]
 	if PARENT=="M":
 		pat_map = maternal_map
 	else:
 		pat_map = paternal_map
-	match=bisect(pat_map[chr]['par.blocks'], cord)
+	match=bisect.bisect(pat_map[chr]['par.blocks'], cord)
 	if pat_map[chr]['ref.blocks'][match-1] == 0:
 		ref_cord = pat_map[chr]['ref.blocks'][match-2]
 	else:
@@ -148,11 +155,119 @@ def TranslateAlignmentPos(PARENT):
 	return read_name,chromosome,pos,mpos,mapq,isize
 
 
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 read_mat,chrom_mat,pos_mat,mpos_mat,mapq_mat,isize_mat = TranslateAlignmentPos(PARENT='M')
+
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
 read_pat,chrom_pat,pos_pat,mpos_pat,mapq_pat,isize_pat = TranslateAlignmentPos(PARENT='P')
 
 
+def samePosition(pqual,mqual):
+	if pqual == mqual:
+		return 0
+	if pqual > mqual:
+		return 1
+	else:
+		return 2
+
+
+def diffPosition(pqual,mqual):
+	if pqual == mqual:
+		return 0
+	if pqual > mqual:
+		return 1
+	else:
+		return 2
+
+
+def checkChromFormatting(chrom):
+	try:
+		chrom = mline.reference_name.split('_')[0]
+	except ValueError:
+		chrom = 0
+	return chrom
+
+consensus = pysam.Samfile('consensus.bam','wb',template=mat)
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+for mline in mat.fetch(until_eof=True):
+	pline = next(pat)
+	if mline.pos == -1:
+		chrom=0
+		mline.pos=translateMappedPosition(chrom,mline.pos+1,PARENT='M')
+	else:
+		try:
+			chrom = mline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		mline.pos=translateMappedPosition(chrom,mline.pos+1,PARENT='M')
+	if mline.mpos == -1:
+	    chrom=0
+	    mline.mpos=translateMappedPosition(chrom,mline.mpos+1,PARENT='M')
+	else:
+		try:
+			chrom = mline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		mline.mpos=translateMappedPosition(chrom,mline.mpos+1,PARENT='M')
+	if pline.pos == -1:
+		chrom =0
+		pline.pos=translateMappedPosition(chrom,pline.pos+1,PARENT='P')
+	else: 
+		try:
+			chrom = pline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		pline.pos=translateMappedPosition(chrom,pline.pos+1,PARENT='P')
+	if pline.mpos == -1:
+		chrom =0
+		pline.mpos=translateMappedPosition(chrom,pline.mpos+1,PARENT='P')
+	else:
+		try:
+			chrom = pline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		pline.mpos=translateMappedPosition(chrom,pline.mpos+1,PARENT='P')
+	if mread.is_read1:
+		mread.template_length=mline.mpos-mline.pos+49
+		pread.template_length=pline.mpos-pline.pos+49
+	else:
+		mread.template_length=mline.mpos-mline.pos-49
+		pread.template_length=pline.mpos-pline.pos-49
+	if mline.qname == pline.qname:
+		if mline.pos == pline.pos:
+			if samePosition(mline.mapping_quality,pline.mapping_quality) == 0:
+				 y = random.random()
+				 if y <0.5:
+				 	consensus.write(mline)
+				 else:
+				 	consensus.write(pline)
+			elif samePosition(mline.mapping_quality,pline.mapping_quality) == 1:
+				consensus.write(pline)
+			else:
+				consensus.write(mline)
+		if mline.pos != pline.pos:
+			if diffPosition(pline.mapping_quality,mline.mapping_quality) == 0:
+				y = random.random()
+				if y <0.5:
+					consensus.write(mline)
+				else:
+					consensus.write(pline)
+			elif diffPosition(pline.mapping_quality,mline.mapping_quality) ==1:
+				consensus.write(pline)
+			else:
+				consensus.write(mline)
 
 
 
 
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+for mline in mat.fetch(until_eof=True):
+	pline = next(pat)
+	if pline.qname == mline.qname:
+		count = count+1
+		print 'true '+str(count)
+	else:
+		print mline
+		break
