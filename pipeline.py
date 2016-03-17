@@ -9,6 +9,7 @@ import numpy as np
 import glob
 from itertools import chain
 import bisect
+import random
 #### temporary function to test timing ####
 if __name__=='__main__':
     from timeit import Timer
@@ -180,16 +181,9 @@ def diffPosition(pqual,mqual):
 		return 2
 
 
-def checkChromFormatting(chrom):
-	try:
-		chrom = mline.reference_name.split('_')[0]
-	except ValueError:
-		chrom = 0
-	return chrom
-
 consensus = pysam.Samfile('consensus.bam','wb',template=mat)
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+mat = pysam.Samfile('mat_primary_sorted.bam', 'rb')
+pat = pysam.Samfile('pat_primary_sorted.bam', 'rb')
 for mline in mat.fetch(until_eof=True):
 	pline = next(pat)
 	if mline.pos == -1:
@@ -228,46 +222,118 @@ for mline in mat.fetch(until_eof=True):
 		except ValueError:
 			chrom = 0
 		pline.mpos=translateMappedPosition(chrom,pline.mpos+1,PARENT='P')
-	if mread.is_read1:
-		mread.template_length=mline.mpos-mline.pos+49
-		pread.template_length=pline.mpos-pline.pos+49
+	if mline.is_read1:
+		mline.template_length=mline.mpos-mline.pos+49
+		pline.template_length=pline.mpos-pline.pos+49
 	else:
-		mread.template_length=mline.mpos-mline.pos-49
-		pread.template_length=pline.mpos-pline.pos-49
+		mline.template_length=mline.mpos-mline.pos-49
+		pline.template_length=pline.mpos-pline.pos-49
 	if mline.qname == pline.qname:
 		if mline.pos == pline.pos:
 			if samePosition(mline.mapping_quality,pline.mapping_quality) == 0:
 				 y = random.random()
 				 if y <0.5:
+				 	mline.tags+=[('HT','M_SRM')]
 				 	consensus.write(mline)
+				 	print "Mat equal"
 				 else:
+				 	pline.tags+=[('HT','P_SRM')]
+				 	print "Pat equal"
 				 	consensus.write(pline)
 			elif samePosition(mline.mapping_quality,pline.mapping_quality) == 1:
+				print "Pat equal greater"
+				pline.tags+=[('HT','P_SBM')]
 				consensus.write(pline)
 			else:
+				mline.tags+=[('HT','M_SBM')]
+				print "Mat equal greater"
 				consensus.write(mline)
 		if mline.pos != pline.pos:
 			if diffPosition(pline.mapping_quality,mline.mapping_quality) == 0:
 				y = random.random()
 				if y <0.5:
+					print "Mat diff equal"
+					mline.tags+=[('HT','M_DRM')]
 					consensus.write(mline)
 				else:
+					print "Pat diff equal"
+					pline.tags+=[('HT','P_DRM')]
 					consensus.write(pline)
 			elif diffPosition(pline.mapping_quality,mline.mapping_quality) ==1:
+				print "Pat diff greater"
+				pline.tags+=[('HT','P_DBM')]
 				consensus.write(pline)
 			else:
+				mline.tags+=[('HT','M_DBM')]
+				print "Mat diff greater"
 				consensus.write(mline)
 
+consensus.close()
 
 
+def PrimaryAlignedReads(bam_object):
+	primary_reads=[]
+	qname_out=[]
+	for read in bam_object.fetch(until_eof=True):
+		if read.is_secondary:
+			pass
+		else:
+			if read.is_read1:
+				qname=read.qname
+				qname+='_1'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
+			else:
+				qname=read.qname
+				qname+='_2'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
+	return primary_reads,qname_out
 
 mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+
+mat_primary, mat_qname = PrimaryAlignedReads(mat)
+
 pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-for mline in mat.fetch(until_eof=True):
-	pline = next(pat)
-	if pline.qname == mline.qname:
-		count = count+1
-		print 'true '+str(count)
+
+pat_primary, pat_qname = PrimaryAlignedReads(pat)
+
+
+
+primary = set(mat_qname).intersection(pat_qname)
+
+mat_primary_out=[]
+mat_primary_out_qname=[]
+for line in mat_primary:
+	if line.qname in primary:
+		mat_primary_out.append(line)
+		mat_primary_out_qname.append(line.qname)
 	else:
-		print mline
-		break
+		pass
+
+pat_primary_out=[]
+pat_primary_out_qname=[]
+for line in pat_primary:
+	if line.qname in primary:
+		pat_primary_out.append(line)
+		pat_primary_out_qname.append(line.qname)
+	else:
+		pass
+
+mat_primary_bam = pysam.Samfile('mat_primary.bam','wb',template=mat)
+
+for line in mat_primary_out:
+	mat_primary_bam.write(line)
+mat_primary_bam.close()
+os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
+
+
+
+pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=mat)
+
+for line in pat_primary_out:
+	pat_primary_bam.write(line)
+pat_primary_bam.close()
+os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
