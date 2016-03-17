@@ -10,6 +10,7 @@ import glob
 from itertools import chain
 import bisect
 import random
+
 #### temporary function to test timing ####
 if __name__=='__main__':
     from timeit import Timer
@@ -87,80 +88,76 @@ def translateMappedPosition(chr,cord,PARENT):
 maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
-
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-
-def TranslateAlignmentPos(PARENT):
-	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
-	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
-	# I have added whether the read is mate_1 or mate_2.
-	read_name=[]
-	pos=[]
-	mpos=[]
-	mapq=[]
-	chromosome=[]
-	isize=[]
-	chrom=''
-	if PARENT == "M":
-		parent = mat
-	else:
-		parent = pat
-	for read in parent.fetch(until_eof=True):
-		if read.is_read1:
-			qname=read.qname
-			read_name.append(qname)
-			if read.pos == -1:
-				chromosome.append(0)
-				pos.append(0)
-				mpos.append(0)
-				mapq.append(read.mapping_quality)
-				isize.append(read.template_length)
-			else:
-				chrom=read.reference_name.split('_')[0]
-				if chrom =="chrM":
-					chromosome.append("chrM")
-					pos.append(read.pos+1)
-					mpos.append(read.mpos+1)
-					mapq.append(read.mapping_quality)
-					isize.append(read.mpos-read.pos+49)
-				else:
-					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
-					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
-					isize.append(read.mpos-read.pos+49)
-					mapq.append(read.mapping_quality)
-					chromosome.append(chrom)
-		else:
-			qname=read.qname
-			read_name.append(qname)
-			if read.pos == -1:
-				chromosome.append(0)
-				mapq.append(read.mapping_quality)
-				isize.append(read.template_length)
-				pos.append(read.pos)
-				mpos.append(read.mpos)
-			else:
-				chrom=read.reference_name.split('_')[0]
-				if chrom == "chrM":
-					chromosome.append("chrM")
-					pos.append(read.pos+1)
-					mpos.append(read.mpos+1)
-					mapq.append(read.mapping_quality)
-					isize.append(read.mpos-read.pos-49)
-				else:
-					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
-					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
-					isize.append(read.mpos-read.pos-49)
-					mapq.append(read.mapping_quality)
-					chromosome.append(chrom)
-	return read_name,chromosome,pos,mpos,mapq,isize
+#def TranslateAlignmentPos(PARENT):
+#	# for maternal and paternal alignments, store two dictionaries (key = mate id, values pos, mate.pos, qual, isize)
+#	# All positions are stored in reference coord space thanks to translateMappedPosition() to differentiate between reads
+#	# I have added whether the read is mate_1 or mate_2.
+#	read_name=[]
+#	pos=[]
+#	mpos=[]
+#	mapq=[]
+#	chromosome=[]
+#	isize=[]
+#	chrom=''
+#	if PARENT == "M":
+#		parent = mat
+#	else:
+#		parent = pat
+#	for read in parent.fetch(until_eof=True):
+#		if read.is_read1:
+#			qname=read.qname
+#			read_name.append(qname)
+#			if read.pos == -1:
+#				chromosome.append(0)
+#				pos.append(0)
+#				mpos.append(0)
+#				mapq.append(read.mapping_quality)
+#				isize.append(read.template_length)
+#			else:
+#				chrom=read.reference_name.split('_')[0]
+#				if chrom =="chrM":
+#					chromosome.append("chrM")
+#					pos.append(read.pos+1)
+#					mpos.append(read.mpos+1)
+#					mapq.append(read.mapping_quality)
+#					isize.append(read.mpos-read.pos+49)
+#				else:
+#					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
+#					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
+#					isize.append(read.mpos-read.pos+49)
+#					mapq.append(read.mapping_quality)
+#					chromosome.append(chrom)
+#		else:
+#			qname=read.qname
+#			read_name.append(qname)
+#			if read.pos == -1:
+#				chromosome.append(0)
+#				mapq.append(read.mapping_quality)
+#				isize.append(read.template_length)
+#				pos.append(read.pos)
+#				mpos.append(read.mpos)
+#			else:
+#				chrom=read.reference_name.split('_')[0]
+#				if chrom == "chrM":
+#					chromosome.append("chrM")
+#					pos.append(read.pos+1)
+#					mpos.append(read.mpos+1)
+#					mapq.append(read.mapping_quality)
+#					isize.append(read.mpos-read.pos-49)
+#				else:
+#					pos.append(translateMappedPosition(chrom,read.pos+1,PARENT=PARENT))
+#					mpos.append(translateMappedPosition(chrom,read.mpos+1,PARENT=PARENT))
+#					isize.append(read.mpos-read.pos-49)
+#					mapq.append(read.mapping_quality)
+#					chromosome.append(chrom)
+#	return read_name,chromosome,pos,mpos,mapq,isize
 
 
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-read_mat,chrom_mat,pos_mat,mpos_mat,mapq_mat,isize_mat = TranslateAlignmentPos(PARENT='M')
+#mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+#read_mat,chrom_mat,pos_mat,mpos_mat,mapq_mat,isize_mat = TranslateAlignmentPos(PARENT='M')
 
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-read_pat,chrom_pat,pos_pat,mpos_pat,mapq_pat,isize_pat = TranslateAlignmentPos(PARENT='P')
+#pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+#read_pat,chrom_pat,pos_pat,mpos_pat,mapq_pat,isize_pat = TranslateAlignmentPos(PARENT='P')
 
 
 def samePosition(pqual,mqual):
@@ -181,6 +178,86 @@ def diffPosition(pqual,mqual):
 		return 2
 
 
+def PrimaryAlignedReads(bam_object):
+	primary_reads=[]
+	qname_out=[]
+	for read in bam_object.fetch(until_eof=True):
+		if read.is_secondary:
+			pass
+		else:
+			if read.is_read1:
+				qname=read.qname
+				qname+='_1'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
+			else:
+				qname=read.qname
+				qname+='_2'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
+	return primary_reads,qname_out
+
+
+# Remove non-primary alignments
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+mat_primary, mat_qname = PrimaryAlignedReads(mat)
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat_primary, pat_qname = PrimaryAlignedReads(pat)
+
+# It's possible one haplotype has more reads than the other after removing secondary alignments
+# this is because split reads can have 1 or more primary alignments
+# this difference is tiny, for this sample, the haplotype BAMs differed by 3 reads!
+primary = set(mat_qname).intersection(pat_qname)
+
+
+def keepPrimaryAlignments(par_primary,primary):
+	par_primary_out=[]
+	par_primary_out_qname=[]
+	for line in par_primary:
+		if line.qname in primary:
+			par_primary_out.append(line)
+			par_primary_out_qname.append(line.qname)
+		else:
+			pass
+	return par_primary_out, par_primary_out_qname
+
+# Paternal primary alignments
+pat_primary_out, pat_qname = keepPrimaryAlignments(pat_primary,primary)
+
+# Maternal primary alignments
+mat_primary_out, mat_qname = keepPrimaryAlignments(mat_primary,primary)
+
+# write to BAM file
+mat_primary_bam = pysam.Samfile('mat_primary.bam','wb',template=mat)
+for line in mat_primary_out:
+	mat_primary_bam.write(line)
+# sort BAM file
+mat_primary_bam.close()
+os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
+
+
+# Write to BAM file
+pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=mat)
+for line in pat_primary_out:
+	pat_primary_bam.write(line)
+
+# Sort BAM file
+pat_primary_bam.close()
+os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
+
+
+# This can be tidied up significantly, this is where the comparisons take place of reads mapping
+# across two haplotypes. 
+# A new SAM flag is introduced HT = Haplotype. With this flag it's possible 
+# to tell which haplotype a read mapped best to:
+# P or M denote Paternal or Maternal Haplotype
+# SBM = same mapping position, best MAPQ selected
+# SRM = same mapping position, same MAPQ, randomly selected
+# DBM = different mapping position, best MAPQ selected
+# DRM = different mapping position, same MAPQ, randomly selected
+# Output to Consensus.bam
 consensus = pysam.Samfile('consensus.bam','wb',template=mat)
 mat = pysam.Samfile('mat_primary_sorted.bam', 'rb')
 pat = pysam.Samfile('pat_primary_sorted.bam', 'rb')
@@ -267,73 +344,7 @@ for mline in mat.fetch(until_eof=True):
 				mline.tags+=[('HT','M_DBM')]
 				print "Mat diff greater"
 				consensus.write(mline)
-
+# File close to print E0F byte.
 consensus.close()
 
 
-def PrimaryAlignedReads(bam_object):
-	primary_reads=[]
-	qname_out=[]
-	for read in bam_object.fetch(until_eof=True):
-		if read.is_secondary:
-			pass
-		else:
-			if read.is_read1:
-				qname=read.qname
-				qname+='_1'
-				read.qname=qname
-				primary_reads.append(read)
-				qname_out.append(qname)
-			else:
-				qname=read.qname
-				qname+='_2'
-				read.qname=qname
-				primary_reads.append(read)
-				qname_out.append(qname)
-	return primary_reads,qname_out
-
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-
-mat_primary, mat_qname = PrimaryAlignedReads(mat)
-
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
-
-pat_primary, pat_qname = PrimaryAlignedReads(pat)
-
-
-
-primary = set(mat_qname).intersection(pat_qname)
-
-mat_primary_out=[]
-mat_primary_out_qname=[]
-for line in mat_primary:
-	if line.qname in primary:
-		mat_primary_out.append(line)
-		mat_primary_out_qname.append(line.qname)
-	else:
-		pass
-
-pat_primary_out=[]
-pat_primary_out_qname=[]
-for line in pat_primary:
-	if line.qname in primary:
-		pat_primary_out.append(line)
-		pat_primary_out_qname.append(line.qname)
-	else:
-		pass
-
-mat_primary_bam = pysam.Samfile('mat_primary.bam','wb',template=mat)
-
-for line in mat_primary_out:
-	mat_primary_bam.write(line)
-mat_primary_bam.close()
-os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
-
-
-
-pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=mat)
-
-for line in pat_primary_out:
-	pat_primary_bam.write(line)
-pat_primary_bam.close()
-os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
