@@ -43,7 +43,7 @@ def MapParserInner(PARENT,chrom):
 		else:
 		# parental block end 	
 			par_end.append(int(par_start[idx+1])-1)
-	ref_end = np.array(ref_start) + (np.array(par_end)- np.array(par_start))
+	ref_end = np.array(ref_start) + (np.array(par_end) - np.array(par_start))
 	ref_blocks = zip(ref_start,ref_end)
 	ref_blocks = list(chain(*ref_blocks))
 	par_blocks = zip(par_start, par_end) 
@@ -71,9 +71,8 @@ def translateMappedPosition(chr,cord,PARENT):
 		ref_cord=cord
 		return ref_cord
 	if chr == 0:
-		ref_cord=cord =1
+		ref_cord = 0
 		return ref_cord
-	ref_cord=[]
 	if PARENT=="M":
 		pat_map = maternal_map
 	else:
@@ -157,6 +156,7 @@ def translateMappedPosition(chr,cord,PARENT):
 #read_pat,chrom_pat,pos_pat,mpos_pat,mapq_pat,isize_pat = TranslateAlignmentPos(PARENT='P')
 
 
+# reads in both haplotypes map to same position
 def samePosition(pqual,mqual):
 	if pqual == mqual:
 		return 0
@@ -165,7 +165,7 @@ def samePosition(pqual,mqual):
 	else:
 		return 2
 
-
+# reads in both haplotypes map to different positions
 def diffPosition(pqual,mqual):
 	if pqual == mqual:
 		return 0
@@ -174,7 +174,7 @@ def diffPosition(pqual,mqual):
 	else:
 		return 2
 
-
+# keep only primary aligned reads
 def PrimaryAlignedReads(bam_object):
 	primary_reads=[]
 	qname_out=[]
@@ -215,9 +215,9 @@ maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
 # Remove non-primary alignments
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
 mat_primary, mat_qname = PrimaryAlignedReads(mat)
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.sorted.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
 pat_primary, pat_qname = PrimaryAlignedReads(pat)
 
 # It's possible one haplotype has more reads than the other after removing secondary alignments
@@ -238,16 +238,17 @@ for line in mat_primary_out:
 # sort BAM file
 mat_primary_bam.close()
 os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
-
+os.system("rm mat_primary.bam")
 
 # Write to BAM file
-pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=mat)
+pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=pat)
 for line in pat_primary_out:
 	pat_primary_bam.write(line)
 
 # Sort BAM file
 pat_primary_bam.close()
 os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
+os.system("rm pat_primary.bam")
 
 
 # This can be tidied up significantly, this is where the comparisons take place of reads mapping
@@ -267,40 +268,40 @@ for mline in mat.fetch(until_eof=True):
 	pline = next(pat)
 	if mline.pos == -1:
 		chrom=0
-		mline.pos=translateMappedPosition(chrom,mline.pos+1,PARENT='M')
+		mline.pos=translateMappedPosition(chrom,mline.pos,PARENT='M')
 	else:
 		try:
 			chrom = mline.reference_name.split('_')[0]
 		except ValueError:
 			chrom = 0
-		mline.pos=translateMappedPosition(chrom,mline.pos+1,PARENT='M')
+		mline.pos=translateMappedPosition(chrom,mline.pos,PARENT='M')
 	if mline.mpos == -1:
 	    chrom=0
-	    mline.mpos=translateMappedPosition(chrom,mline.mpos+1,PARENT='M')
+	    mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT='M')
 	else:
 		try:
 			chrom = mline.reference_name.split('_')[0]
 		except ValueError:
 			chrom = 0
-		mline.mpos=translateMappedPosition(chrom,mline.mpos+1,PARENT='M')
+		mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT='M')
 	if pline.pos == -1:
 		chrom =0
-		pline.pos=translateMappedPosition(chrom,pline.pos+1,PARENT='P')
+		pline.pos=translateMappedPosition(chrom,pline.pos,PARENT='P')
 	else: 
 		try:
 			chrom = pline.reference_name.split('_')[0]
 		except ValueError:
 			chrom = 0
-		pline.pos=translateMappedPosition(chrom,pline.pos+1,PARENT='P')
+		pline.pos=translateMappedPosition(chrom,pline.pos,PARENT='P')
 	if pline.mpos == -1:
 		chrom =0
-		pline.mpos=translateMappedPosition(chrom,pline.mpos+1,PARENT='P')
+		pline.mpos=translateMappedPosition(chrom,pline.mpos,PARENT='P')
 	else:
 		try:
 			chrom = pline.reference_name.split('_')[0]
 		except ValueError:
 			chrom = 0
-		pline.mpos=translateMappedPosition(chrom,pline.mpos+1,PARENT='P')
+		pline.mpos=translateMappedPosition(chrom,pline.mpos,PARENT='P')
 	if mline.is_read1:
 		mline.template_length=mline.mpos-mline.pos+49
 		pline.template_length=pline.mpos-pline.pos+49
