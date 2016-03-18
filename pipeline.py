@@ -71,7 +71,10 @@ def translateMappedPosition(chr,cord,PARENT):
 		ref_cord=cord
 		return ref_cord
 	if chr == 0:
-		ref_cord = 0
+		ref_cord = -1
+		return ref_cord
+	if cord == -1:
+		ref_cord = -1
 		return ref_cord
 	if PARENT=="M":
 		pat_map = maternal_map
@@ -239,14 +242,15 @@ for line in mat_primary_out:
 mat_primary_bam.close()
 os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
 os.system("rm mat_primary.bam")
-
+mat_primary_out=None
 # Write to BAM file
 pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=pat)
 for line in pat_primary_out:
 	pat_primary_bam.write(line)
-
-# Sort BAM file
 pat_primary_bam.close()
+pat_primary_out=None
+# Sort BAM file
+
 os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
 os.system("rm pat_primary.bam")
 
@@ -349,5 +353,5 @@ for mline in mat.fetch(until_eof=True):
 				consensus.write(mline)
 # File close to print E0F byte.
 consensus.close()
-
-
+os.system("samtools sort consensus.bam consensus.sorted")
+os.system("rm consensus.bam")
