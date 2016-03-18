@@ -48,7 +48,7 @@ def MapParserInner(PARENT,chrom):
 	ref_blocks = list(chain(*ref_blocks))
 	par_blocks = zip(par_start, par_end) 
 	par_blocks = list(chain(*par_blocks))
-	# a dictionary of three lists reference start and end position, parental start and end position.
+# a dictionary of three lists reference start and end position, parental start and end position.
 	MapInner = {'ref.blocks':ref_blocks,'par.blocks':par_blocks}
 	return MapInner
 
@@ -83,6 +83,8 @@ def translateMappedPosition(chr,cord,PARENT):
 	match=bisect.bisect(pat_map[chr]['par.blocks'], cord)
 	if pat_map[chr]['ref.blocks'][match-1] == 0:
 		ref_cord = pat_map[chr]['ref.blocks'][match-2]
+		if ref_cord == 0:
+			ref_cord = pat_map[chr]['ref.blocks'][match-3]
 	else:
 		ref_cord = cord-pat_map[chr]['par.blocks'][match]+pat_map[chr]['ref.blocks'][match]
 	return ref_cord
