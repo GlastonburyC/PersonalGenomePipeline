@@ -34,8 +34,8 @@ def MapParserInner(PARENT,chrom):
 			line=lines[i].split()
 			if line[par] !='0':
 				# parental block start
-				par_start.append(int(line[par]))
-				ref_start.append(int(line[0]))
+				par_start.append(int(line[par])-1)
+				ref_start.append(int(line[0])-1)
 	for idx, val in enumerate(par_start):
 		# if last entry, set block to large number (should be end of chromosome)
 		if idx == len(par_start)-1:
@@ -43,12 +43,16 @@ def MapParserInner(PARENT,chrom):
 		else:
 		# parental block end 	
 			par_end.append(int(par_start[idx+1])-1)
-	ref_end = np.array(ref_start) + (np.array(par_end) - np.array(par_start))
+	for index,value in enumerate(ref_start):
+		if ref_start[index]== -1:
+			ref_end.append(-1)
+		else:
+			ref_end.append(ref_start[index] + (par_end[index] - par_start[index]))
 	ref_blocks = zip(ref_start,ref_end)
 	ref_blocks = list(chain(*ref_blocks))
-	par_blocks = zip(par_start, par_end) 
+	par_blocks = zip(par_start, par_end)
 	par_blocks = list(chain(*par_blocks))
-# a dictionary of three lists reference start and end position, parental start and end position.
+	# a dictionary of three lists reference start and end position, parental start and end position.
 	MapInner = {'ref.blocks':ref_blocks,'par.blocks':par_blocks}
 	return MapInner
 
@@ -80,13 +84,24 @@ def translateMappedPosition(chr,cord,PARENT):
 		pat_map = maternal_map
 	else:
 		pat_map = paternal_map
-	match=bisect.bisect(pat_map[chr]['par.blocks'], cord)
-	if pat_map[chr]['ref.blocks'][match-1] == 0:
-		ref_cord = pat_map[chr]['ref.blocks'][match-2]
-		if ref_cord == 0:
-			ref_cord = pat_map[chr]['ref.blocks'][match-3]
+	##
+	match=bisect.bisect_left(pat_map[chr]['par.blocks'], cord)
+	## even match denotes block start
+	## odd match denotes block end
+	## if cord is inside block, match will return end (odd number), so we get turn it into start
+	if match % 2 != 0:
+		match = match - 1
+	ref_start = pat_map[chr]['ref.blocks'][match]
+	par_start = pat_map[chr]['par.blocks'][match]
+	if ref_start == -1:
+		## map read to last observed reference position
+		ref_cord = -1
+		i=1
+		while ref_cord == -1:
+			ref_cord = pat_map[chr]['ref.blocks'][match-i]
+			i+=2
 	else:
-		ref_cord = cord-pat_map[chr]['par.blocks'][match]+pat_map[chr]['ref.blocks'][match]
+		ref_cord = cord - par_start + ref_start
 	return ref_cord
 
 #def TranslateAlignmentPos(PARENT):
