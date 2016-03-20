@@ -2,7 +2,7 @@
 
 ## Functionality
 
-Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, baed on mapping quality
+Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, based on mapping quality
 
 I have introduced a new SAM flag 'HT' which is prefixed with P/M (paternal/maternal) and followed by (i.e. _SRM)
 
