@@ -190,12 +190,12 @@ paternal_map=MapParser(PARENT='P')
 # DRM = different mapping position, same MAPQ, randomly selected
 # Output to Consensus.bam
 
-mat = pysam.Samfile('roddy/Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
 mat_line_number = 0
 for mline in mat.fetch(until_eof=True):
 	mat_line_number += 1
 
-pat = pysam.Samfile('roddy/Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
 pat_line_number = 0
 for pline in pat.fetch(until_eof=True):
 	pat_line_number += 1
