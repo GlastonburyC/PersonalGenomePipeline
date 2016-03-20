@@ -211,7 +211,10 @@ patr = next(pat)
 
 i=1
 j=1
-
+# Iterate through both mat and pat simultaneously. Iterate through each read entry 
+# (primary and secondary alignment) only extracting primary alignments
+# Translate the pos and mpos of the read on the fly to reference coordinates.
+# Write a consensus BAM file, consisting of the best read, given a haplotype alignment.
 while (i < mat_line_number) and (j < pat_line_number):
 	read_name = matr.qname
 	patr_list = []
