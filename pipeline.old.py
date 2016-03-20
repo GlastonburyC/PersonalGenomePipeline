@@ -112,72 +112,84 @@ def checkMAPQ(pqual,mqual):
 	else:
 		return 2
 
-def translateReadCord(mline,PARENT):
-	# modify position
-	if mline.pos == -1:
-		chrom=0
-	else:
-		try:
-			chrom = mline.reference_name.split('_')[0]
-		except ValueError:
-			chrom = 0
-	mline.pos=translateMappedPosition(chrom,mline.pos,PARENT)
-	# modify mate's position
-	if mline.mpos == -1:
-	    chrom=0
-	else:
-		try:
-			chrom = mline.reference_name.split('_')[0]
-		except ValueError:
-			chrom = 0
-	mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT)
-	# calculate template length
-	if mline.is_read1:
-		mline.template_length=mline.mpos-mline.pos+49
-	else:
-		mline.template_length=mline.mpos-mline.pos-49
-	return mline
 
-def compareHapReads(mline,pline):
-	if mline.qname == pline.qname:
-		if mline.pos == pline.pos:
-			if checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 0:
-				 y = random.random()
-				 if y <0.5:
-				 	mline.tags+=[('HT','M_SRM')]
-				 	to_write=mline
-				 else:
-				 	pline.tags+=[('HT','P_SRM')]
-				 	to_write=pline
-			elif checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 1:
-				pline.tags+=[('HT','P_SBM')]
-				to_write=pline
-			else:
-				mline.tags+=[('HT','M_SBM')]
-				to_write=mline
+# keep only primary aligned reads
+def PrimaryAlignedReads(bam_object):
+	primary_reads=[]
+	qname_out=[]
+	for read in bam_object.fetch(until_eof=True):
+		if read.is_secondary:
+			pass
 		else:
-			if checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 0:
-				y = random.random()
-				if y <0.5:
-					mline.tags+=[('HT','M_DRM')]
-					to_write=mline
-				else:
-					pline.tags+=[('HT','P_DRM')]
-					to_write=pline
-			elif checkMAPQ(pline.mapping_quality,mline.mapping_quality) ==1:
-				pline.tags+=[('HT','P_DBM')]
-				to_write=pline
+			if read.is_read1:
+				qname=read.qname
+				qname+='_1'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
 			else:
-				mline.tags+=[('HT','M_DBM')]
-				to_write=mline
-	return to_write
+				qname=read.qname
+				qname+='_2'
+				read.qname=qname
+				primary_reads.append(read)
+				qname_out.append(qname)
+	return primary_reads,qname_out
+
+
+def keepPrimaryAlignments(par_primary,primary):
+	par_primary_out=[]
+	for line in par_primary:
+		if line.qname in primary:
+			par_primary_out.append(line)
+		else:
+			pass
+	return par_primary_out
 
 ##### END OF FUNCTIONS #####
 
 # Store maternal and paternal blocks relative to the reference.
-
 maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
+
+# Remove non-primary alignments
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
+mat_primary, mat_qname = PrimaryAlignedReads(mat)
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
+pat_primary, pat_qname = PrimaryAlignedReads(pat)
+
+# It's possible one haplotype has more reads than the other after removing secondary alignments
+# this is because split reads can have 1 or more primary alignments
+# this difference is tiny, for this sample, the haplotype BAMs differed by 3 reads!
+primary = set(mat_qname).intersection(pat_qname)
+
+# Paternal primary alignments
+pat_primary_out = keepPrimaryAlignments(pat_primary,primary)
+
+# Maternal primary alignments
+mat_primary_out = keepPrimaryAlignments(mat_primary,primary)
+
+# write to BAM file
+mat_primary_bam = pysam.Samfile('mat_primary.bam','wb',template=mat)
+for line in mat_primary_out:
+	mat_primary_bam.write(line)
+
+# sort BAM file
+mat_primary_bam.close()
+os.system("samtools sort -n mat_primary.bam mat_primary_sorted")
+os.system("rm mat_primary.bam")
+mat_primary_out=None
+# Write to BAM file
+pat_primary_bam = pysam.Samfile('pat_primary.bam','wb',template=pat)
+for line in pat_primary_out:
+	pat_primary_bam.write(line)
+
+pat_primary_bam.close()
+pat_primary_out=None
+# Sort BAM file
+
+os.system("samtools sort -n pat_primary.bam pat_primary_sorted")
+os.system("rm pat_primary.bam")
+
 
 # This can be tidied up significantly, this is where the comparisons take place of reads mapping
 # across two haplotypes. 
@@ -189,68 +201,93 @@ paternal_map=MapParser(PARENT='P')
 # DBM = different mapping position, best MAPQ selected
 # DRM = different mapping position, same MAPQ, randomly selected
 # Output to Consensus.bam
-
-mat = pysam.Samfile('roddy/Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
-mat_line_number = 0
-for mline in mat.fetch(until_eof=True):
-	mat_line_number += 1
-
-pat = pysam.Samfile('roddy/Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
-pat_line_number = 0
-for pline in pat.fetch(until_eof=True):
-	pat_line_number += 1
-
-
-#consensus = pysam.Samfile('consensus.bam','wb',template=mat)
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
 consensus = pysam.Samfile('consensus.bam','wb',template=mat)
-
-matr = next(mat)
-patr = next(pat)
-
-i=1
-j=1
-
-while (i < mat_line_number) and (j < pat_line_number):
-	read_name = matr.qname
-	patr_list = []
-	matr_list = []
-	# Get primary maternal reads
-	while (matr.qname == read_name):
-		if matr.is_secondary == False:
-			matr_list.append(matr)
-		if i < mat_line_number:
-			matr = next(mat)
-		else:
-			break
-		i+=1
-	# Get primary paternal reads
-	while (patr.qname == read_name):
-		if patr.is_secondary == False:
-			patr_list.append(patr)
-		if j < pat_line_number:
-			patr = next(pat)
-		else:
-			break
-		j+=1
-	if (len(patr_list) == 2) and (len(matr_list) == 2):
-		matr1=matr_list[0]
-		matr2=matr_list[1]
-		patr1=patr_list[0]
-		patr2=patr_list[1]
-		matr1=translateReadCord(matr1,PARENT='M')
-		matr2=translateReadCord(matr2,PARENT='M')
-		patr1=translateReadCord(patr1,PARENT='P')
-		patr2=translateReadCord(patr2,PARENT='P')
-		consensus.write(compareHapReads(matr1,patr1))
-		consensus.write(compareHapReads(matr2,patr2))
-	elif (len(patr_list) == 1) and (len(matr_list) == 1):
-		matr1=matr_list[0]
-		patr1=patr_list[0]
-		if (matr1.is_read1 and patr1.is_read1) or (matr1.is_read2 and patr1.is_read2):
-			matr1=translateReadCord(matr1,PARENT='M')
-			patr1=translateReadCord(patr1,PARENT='P')
-			consensus.write(compareHapReads(matr1,patr1))
-
+mat = pysam.Samfile('mat_primary_sorted.bam', 'rb')
+pat = pysam.Samfile('pat_primary_sorted.bam', 'rb')
+for mline in mat.fetch(until_eof=True):
+	pline = next(pat)
+	if mline.pos == -1:
+		chrom=0
+		mline.pos=translateMappedPosition(chrom,mline.pos,PARENT='M')
+	else:
+		try:
+			chrom = mline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		mline.pos=translateMappedPosition(chrom,mline.pos,PARENT='M')
+	if mline.mpos == -1:
+	    chrom=0
+	    mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT='M')
+	else:
+		try:
+			chrom = mline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT='M')
+	if pline.pos == -1:
+		chrom =0
+		pline.pos=translateMappedPosition(chrom,pline.pos,PARENT='P')
+	else: 
+		try:
+			chrom = pline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		pline.pos=translateMappedPosition(chrom,pline.pos,PARENT='P')
+	if pline.mpos == -1:
+		chrom =0
+		pline.mpos=translateMappedPosition(chrom,pline.mpos,PARENT='P')
+	else:
+		try:
+			chrom = pline.reference_name.split('_')[0]
+		except ValueError:
+			chrom = 0
+		pline.mpos=translateMappedPosition(chrom,pline.mpos,PARENT='P')
+	if mline.is_read1:
+		mline.template_length=mline.mpos-mline.pos+49
+		pline.template_length=pline.mpos-pline.pos+49
+	else:
+		mline.template_length=mline.mpos-mline.pos-49
+		pline.template_length=pline.mpos-pline.pos-49
+	if mline.qname == pline.qname:
+		if mline.pos == pline.pos:
+			if checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 0:
+				 y = random.random()
+				 if y <0.5:
+				 	mline.tags+=[('HT','M_SRM')]
+				 	consensus.write(mline)
+				 	print "Mat equal"
+				 else:
+				 	pline.tags+=[('HT','P_SRM')]
+				 	print "Pat equal"
+				 	consensus.write(pline)
+			elif checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 1:
+				print "Pat equal greater"
+				pline.tags+=[('HT','P_SBM')]
+				consensus.write(pline)
+			else:
+				mline.tags+=[('HT','M_SBM')]
+				print "Mat equal greater"
+				consensus.write(mline)
+		if mline.pos != pline.pos:
+			if checkMAPQ(pline.mapping_quality,mline.mapping_quality) == 0:
+				y = random.random()
+				if y <0.5:
+					print "Mat diff equal"
+					mline.tags+=[('HT','M_DRM')]
+					consensus.write(mline)
+				else:
+					print "Pat diff equal"
+					pline.tags+=[('HT','P_DRM')]
+					consensus.write(pline)
+			elif checkMAPQ(pline.mapping_quality,mline.mapping_quality) ==1:
+				print "Pat diff greater"
+				pline.tags+=[('HT','P_DBM')]
+				consensus.write(pline)
+			else:
+				mline.tags+=[('HT','M_DBM')]
+				print "Mat diff greater"
+				consensus.write(mline)
+# File close to print E0F byte.
 consensus.close()
+os.system("samtools sort consensus.bam consensus.sorted")
+os.system("rm consensus.bam")
