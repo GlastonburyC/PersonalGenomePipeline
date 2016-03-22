@@ -10,11 +10,6 @@ from itertools import chain
 import bisect
 import random
 
-#### temporary function to test timing ####
-if __name__=='__main__':
-    from timeit import Timer
-    t = Timer(lambda: translateMappedPosition('chr1',28592,PARENT='M'))
-    print t.timeit(number=1)
 
 # Take a map file as input - create blocks for either haplotype to map read to
 def MapParserInner(PARENT,chrom):
@@ -60,7 +55,7 @@ def MapParser(PARENT):
 	Map_object={}
 	for file in glob.glob("*.map"):
 		chr=file.split('_')[0]
-		Map_object[chr]=MapParserInner(PARENT,chrom=file)
+		Map_object[str(chr)]=MapParserInner(PARENT,chrom=file)
 	#dictionary, key = chromosome, values are a dictionary of blocks.
 	return Map_object
 
@@ -70,10 +65,13 @@ def translateMappedPosition(chr,cord,PARENT):
 	# reference genome. If the read maps within an insertion, it is assigned the 
 	# last position unchanged in the reference (beginning of the insertion).
 	ref_cord=[]
-	if chr =='chrM':
+	if chr =='MT':
 		ref_cord=cord
 		return ref_cord
-	if chr == 0:
+	if chr =='Y':
+		ref_cord=cord
+		return ref_cord
+	if chr == '0':
 		ref_cord = -1
 		return ref_cord
 	if cord == -1:
@@ -118,19 +116,19 @@ def translateReadCord(mline,PARENT):
 		chrom=0
 	else:
 		try:
-			chrom = mline.reference_name.split('_')[0]
+			chrom = mline.reference_name
 		except ValueError:
 			chrom = 0
-	mline.pos=translateMappedPosition(chrom,mline.pos,PARENT)
+	mline.pos=translateMappedPosition(str(chrom),mline.pos,PARENT)
 	# modify mate's position
 	if mline.mpos == -1:
 	    chrom=0
 	else:
 		try:
-			chrom = mline.reference_name.split('_')[0]
+			chrom = mline.reference_name
 		except ValueError:
 			chrom = 0
-	mline.mpos=translateMappedPosition(chrom,mline.mpos,PARENT)
+	mline.mpos=translateMappedPosition(str(chrom),mline.mpos,PARENT)
 	# calculate template length
 	if mline.is_read1:
 		mline.template_length=mline.mpos-mline.pos+49
@@ -190,20 +188,20 @@ paternal_map=MapParser(PARENT='P')
 # DRM = different mapping position, same MAPQ, randomly selected
 # Output to Consensus.bam
 
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
 mat_line_number = 0
 for mline in mat.fetch(until_eof=True):
 	mat_line_number += 1
 
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
 pat_line_number = 0
 for pline in pat.fetch(until_eof=True):
 	pat_line_number += 1
 
 
 #consensus = pysam.Samfile('consensus.bam','wb',template=mat)
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam.bam', 'rb')
+mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
+pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
 consensus = pysam.Samfile('consensus.bam','wb',template=mat)
 
 matr = next(mat)
@@ -257,3 +255,4 @@ while (i < mat_line_number) and (j < pat_line_number):
 			consensus.write(compareHapReads(matr1,patr1))
 
 consensus.close()
+
