@@ -177,6 +177,12 @@ def compareHapReads(mline,pline):
 maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
+os.system("samtools sort -n Maternal.Aligned.sortedByCoord.out.bam Maternal.Aligned.sortedByCoord.out.sorted")
+os.system("samtools sort -n Paternal.Aligned.sortedByCoord.out.bam Paternal.Aligned.sortedByCoord.out.sorted")
+os.system("mv Paternal.Aligned.sortedByCoord.out.sorted.bam Paternal.Aligned.sortedByCoord.out.bam")
+os.system("mv Maternal.Aligned.sortedByCoord.out.sorted.bam Maternal.Aligned.sortedByCoord.out.bam")
+
+
 # This can be tidied up significantly, this is where the comparisons take place of reads mapping
 # across two haplotypes. 
 # A new SAM flag is introduced HT = Haplotype. With this flag it's possible 
@@ -255,4 +261,31 @@ while (i < mat_line_number) and (j < pat_line_number):
 			consensus.write(compareHapReads(matr1,patr1))
 
 consensus.close()
+
+vcf_reader = vcf.Reader(open('131.vcf','r'))
+vcf_writer = vcf.Writer(open('131.hets.vcf','w'),vcf_reader)
+for record in vcf_reader:
+  if len(record.get_hets()) != 0:
+  	if record.genotype('131')['GT'][1]=='|':
+  		if record.QUAL >= 30:
+  			vcf_writer.write_record(record)
+vcf_writer.close()
+
+# create het vcf index, else GATK throws a fit about Karyotypic ordering
+
+# filter the BAM file
+
+os.system('samtools view -b -F4 -q 30 consensus.bam -o consensus.filtered.bam')
+
+os.system('samtools sort consensus.filtered.bam consensus.filtered.sorted.bam')
+os.system('rm consensus.filtered.bam')
+
+os.system('ReadGroups..')
+
+os.system('samorder')
+os.system('vcforder')
+
+os.system('bgzip 131.hets.vcf')
+os.system('tabix 131.hets.vcf')
+
 
