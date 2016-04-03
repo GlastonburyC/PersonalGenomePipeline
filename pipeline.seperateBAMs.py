@@ -143,38 +143,38 @@ def compareHapReads(mline,pline):
 			if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
 				 y = random.random()
 				 if y <0.5:
-				 #	mline.tags+=[('HT','M_SRM')]
+				 	mline.tags+=[('HT','random')]
 				 	to_write=mline
 				 	flag='M'
 				 else:
-				 #	pline.tags+=[('HT','P_SRM')]
+				 	pline.tags+=[('HT','random')]
 				 	to_write=pline
 				 	flag='P'
 			elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 1:
-				#pline.tags+=[('HT','P_SBM')]
+				pline.tags+=[('HT','best')]
 				to_write=pline
 				flag='P'
 			else:
-				#mline.tags+=[('HT','M_SBM')]
+				mline.tags+=[('HT','best')]
 				to_write=mline
 				flag='M'
 		else:
 			if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
 				y = random.random()
 				if y <0.5:
-				#	mline.tags+=[('HT','M_DRM')]
+					mline.tags+=[('HT','random')]
 					to_write=mline
 					flag='M'
 				else:
-				#	pline.tags+=[('HT','P_DRM')]
+					pline.tags+=[('HT','random')]
 					to_write=pline
 					flag='P'
 			elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) ==1:
-			#	pline.tags+=[('HT','P_DBM')]
+				pline.tags+=[('HT','best')]
 				to_write=pline
 				flag='P'
 			else:
-			#	mline.tags+=[('HT','M_DBM')]
+				mline.tags+=[('HT','best')]
 				to_write=mline
 				flag='M'
 	return to_write,flag
