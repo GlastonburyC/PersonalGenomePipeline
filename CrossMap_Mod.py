@@ -1,3 +1,9 @@
+#!/usr/bin/python
+'''---------------------------------------------------------------------------------------
+CrossMap: lift over genomics coordinates between assemblies.
+Support BED, GFF/GTF, BAM/SAM, BigWig/Wig, etc.
+------------------------------------------------------------------------------------------'''
+
 import os,sys
 if sys.version_info[0] != 2 or sys.version_info[1] != 7:
         print >>sys.stderr, "\nYou are using python" + str(sys.version_info[0]) + '.' + str(sys.version_info[1]) + " CrossMap needs python2.7.*!\n"
@@ -387,7 +393,7 @@ def crossmap_vcf_file(mapping, infile,outfile, liftoverfile, refgenome):
 				# update start coordinate
 				fields[1] = a[1][1] + 1
 				
-				
+				backup=fields[3]
 				# update ref allele
 				tmp = pysam.faidx(refgenome,str(a[1][0]) + ':' + str(a[1][1]+1) + '-' + str(a[1][2]))
 				fields[3] =tmp[-1].rstrip('\n\r').upper()
@@ -395,8 +401,13 @@ def crossmap_vcf_file(mapping, infile,outfile, liftoverfile, refgenome):
 				if fields[3] != fields[4]:
 					print >>FILE_OUT, '\t'.join(map(str, fields))
 				else:
+					
+					fields[3]=fields[4]
+					fields[4]=backup
+					
 					print >>UNMAP, line
-					fail += 1
+					print >>FILE_OUT, '\t'.join(map(str, fields))
+					
 			else:
 				print >>UNMAP, line
 				fail += 1
