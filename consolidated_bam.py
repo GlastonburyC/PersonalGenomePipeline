@@ -1,3 +1,5 @@
+### This method has been retired due to biases caused by translating reads to a ref coordinate system ###
+
 ##### C. Glastonbury Haplotype coordinates to reference space BAM file creation ######
 ##### Requires latest version of PySam - Cluster currently has old version - this doesn't work! #####
 import os
