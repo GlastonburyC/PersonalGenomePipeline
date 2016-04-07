@@ -2,15 +2,12 @@
 
 ## Functionality
 
-Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, based on mapping quality
+Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, based on edit distance.
 
-I have introduced a new SAM flag 'HT' which is prefixed with P/M (paternal/maternal) and followed by (i.e. _SRM)
+For each read, simply choose the read which has the least number of mismatches, aligned to either haplotype. As both reads are the same, the alignment with the least mismatches should be consider the optimal choice.
 
-# Rules
-1. If reads map to the same position in either haplotype, select one at random (P_SRM or M_SRM)
-2. If read maps to the same position, with a different MAPQ in one haplotype, select that highest MAPQ (P_SBM or M_SBM)
-3. if read maps to a different position in either haplotype with the same MAPQ, choose one at random (P_DRM or M_DRM)
-4. if read maps to a different position in either haplotypes with different MAPQ, choose the best MAPQ. (P_DBM or M_DBM)
-
-For example, P_SRM - paternally mapped read, read mapped to the same position in either haplotype, same MAPQ, chosen randomly
-or M_DBM - maternally mapped read, read mapped to different positions in either haplotype, with different MAPQ, Maternal selected due to higher MAPQ score.
+1. Create paternal and maternal vcfs
+2. run ASEReadCounter on both haplotypes (using each parental reference)
+3. Correct bug in ASEReadCounter that outputs INDEL alleles incorrectly (i.e. Should be AAG/A, But the output is A/A)
+4. Consolidate alleleCounts into REF/ALT according to universal reference vcf.
+5. PROFIT.
