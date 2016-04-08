@@ -1,9 +1,10 @@
-module load samtools
 $THREAD_NO=12
 
+module load samtools
 module load vcftools
 module load R  # change depending on your cluster environment
 module load python/2.7
+
 # Maternal genome generation (suffix arrays etc)
 STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
 
