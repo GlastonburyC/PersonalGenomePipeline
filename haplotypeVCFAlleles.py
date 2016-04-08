@@ -1,6 +1,7 @@
 import vcf 
 import os
-vcf_mat = vcf.Reader(open('131.maternal.vcf','r'))
+import sys
+vcf_mat = vcf.Reader(open(sys.argv[0],'r'))
 vcf_mat_out = vcf.Writer(open('131.maternal2.vcf','w'),vcf_mat)
 
 for record in vcf_mat:
@@ -15,11 +16,11 @@ for record in vcf_mat:
 		vcf_mat_out.write_record(record)
 
 vcf_mat_out.close()
-os.system('mv 131.maternal2.vcf 131.maternal.vcf')
+os.system('%s 131.maternal.vcf' % sys.argv[0])
 
 import vcf 
 
-vcf_pat = vcf.Reader(open('131.paternal.vcf','r'))
+vcf_pat = vcf.Reader(open(sys.argv[1],'r'))
 vcf_pat_out = vcf.Writer(open('131.paternal2.vcf','w'),vcf_pat)
 
 for record in vcf_pat:
@@ -34,4 +35,4 @@ for record in vcf_pat:
 		vcf_pat_out.write_record(record)
 
 vcf_pat_out.close()
-os.system('mv 131.paternal2.vcf 131.paternal.vcf')
+os.system('%s 131.paternal.vcf' % sys.argv[1])
