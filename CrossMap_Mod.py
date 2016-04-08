@@ -393,18 +393,17 @@ def crossmap_vcf_file(mapping, infile,outfile, liftoverfile, refgenome):
 				# update start coordinate
 				fields[1] = a[1][1] + 1
 				
-				backup=fields[3]
+				#backup=fields[3]
 				# update ref allele
 				tmp = pysam.faidx(refgenome,str(a[1][0]) + ':' + str(a[1][1]+1) + '-' + str(a[1][2]))
-				fields[3] =tmp[-1].rstrip('\n\r').upper()
+				#fields[3] =tmp[-1].rstrip('\n\r').upper()
 				
 				if fields[3] != fields[4]:
 					print >>FILE_OUT, '\t'.join(map(str, fields))
 				else:
 					
-					fields[3]=fields[4]
-					fields[4]=backup
-					
+					#fields[3]=fields[4]
+					#fields[4]=backup
 					print >>UNMAP, line
 					print >>FILE_OUT, '\t'.join(map(str, fields))
 					
@@ -796,7 +795,7 @@ def crossmap_bam_file(mapping, chainfile, infile,  outfile_prefix, chrom_size, I
 				
 					if not old_alignment.mate_is_unmapped:
 						try:
-							read2_chr = samfile.getrname(old_alignment.rnext)									
+							read2_chr = samfile.getrname(old_alignment.rnext)								
 							read2_strand = '-' if old_alignment.mate_is_reverse else '+'
 							read2_start = old_alignment.pnext
 							read2_end = read2_start + 1
