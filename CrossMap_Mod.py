@@ -3,6 +3,11 @@
 CrossMap: lift over genomics coordinates between assemblies.
 Support BED, GFF/GTF, BAM/SAM, BigWig/Wig, etc.
 ------------------------------------------------------------------------------------------'''
+''' This is an edited version of the original CrossMap. All functionality is the same exept for how it handles VCFs. 
+    For VCF's it updates the variant position but not the allele, this is because we are using personal genomes in which
+    we want to translate the VCF onto paternal and maternal haplotypes. An additional script is run after CrossMap
+    which changes the alleles in the VCF to refect whether its in the maternal or paternal genome. I.e. if its the maternal
+    VCF and a SNP is 0/1, the Maternal is assigned ALT and the paternal REF (this is the same as vcf2diploid).'''
 
 import os,sys
 if sys.version_info[0] != 2 or sys.version_info[1] != 7:
