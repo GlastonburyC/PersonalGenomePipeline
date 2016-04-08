@@ -1,9 +1,10 @@
 '''Rename all chromosomes in fasta to reflect VCF
    using specified file, rename.txt'''
+import sys
 
-fasta= open('all_paternal.fa')
+fasta= open(sys.argv[0])
 newnames= open('rename.txt')
-newfasta= open('paternal.renamed.fa', 'w')
+newfasta= open(sys.argv[1], 'w')
 
 for line in fasta:
     if line.startswith('>'):
@@ -16,9 +17,9 @@ fasta.close()
 newnames.close()
 newfasta.close()
 
-fasta= open('all_maternal.fa')
+fasta= open(sys.argv[2])
 newnames= open('rename.txt')
-newfasta= open('maternal.renamed.fa', 'w')
+newfasta= open(sys.argv[3], 'w')
 
 for line in fasta:
     if line.startswith('>'):
