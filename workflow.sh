@@ -5,17 +5,23 @@ module load vcftools
 module load R  # change depending on your cluster environment
 module load python/2.7
 
+java -jar vcf2diploid.jar -id $SAMPLE_ID -chr hg19.fa -vcf "$SAMPLE_ID".vcf -outDir $SAMPLE_ID
+
+cd $SAMPLE_ID
+mv *_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
+mv *_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
+
 # Maternal genome generation (suffix arrays etc)
-STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
 
 #Paternal genome generation (suffix arrays etc)
-STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/paternal/ --genomeFastaFiles *_"$SAMPLE_ID"_paternal.fa
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/paternal/ --genomeFastaFiles *_"$SAMPLE_ID"_paternal.fa
 
 #Align paternal
-STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/F226_new_120618_7_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/F226_new_120618_7_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
 
 #Align maternal
-STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/F226_new_120618_7_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/F226_new_120618_7_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
 
 ########################################
 
