@@ -102,7 +102,7 @@ def translateMappedPosition(chr,cord,PARENT):
 	return ref_cord
 
 # reads in both haplotypes map to same position
-def checkMAPQ(pedit,medit):
+def checkEditDistance(pedit,medit):
 	if pedit == medit:
 		return 0
 	if pedit < medit:
@@ -139,7 +139,7 @@ def translateReadCord(mline,PARENT):
 def compareHapReads(mline,pline):
 	flag=''
 	if mline.qname == pline.qname:
-		if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
+		if checkEditDistance(pline.tags[2][1],mline.tags[2][1]) == 0:
 			 y = random.random()
 			 if y <0.5:
 			 	mline.tags+=[('HT','random')]
@@ -149,7 +149,7 @@ def compareHapReads(mline,pline):
 			 	pline.tags+=[('HT','random')]
 			 	to_write=pline
 			 	flag='P'
-		elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 1:
+		elif checkEditDistance(pline.tags[2][1],mline.tags[2][1]) == 1:
 			pline.tags+=[('HT','best')]
 			to_write=pline
 			flag='P'
@@ -246,15 +246,8 @@ while (i < mat_line_number) and (j < pat_line_number):
 		matr2=matr_list[1]
 		patr1=patr_list[0]
 		patr2=patr_list[1]
-		#matr1=translateReadCord(matr1,PARENT='M')
-		#matr2=translateReadCord(matr2,PARENT='M')
-		#patr1=translateReadCord(patr1,PARENT='P')
-		#patr2=translateReadCord(patr2,PARENT='P')
-
-		# first pair
 		compareAndWrite(matr1,patr1,best_mat,best_pat)
 		compareAndWrite(matr2,patr2,best_mat,best_pat)
-
 	elif (len(patr_list) == 1) and (len(matr_list) == 1):
 		matr1=matr_list[0]
 		patr1=patr_list[0]
