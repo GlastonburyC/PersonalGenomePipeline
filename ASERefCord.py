@@ -100,7 +100,7 @@ for mat in ase_mat:
 		if mat.split('\t')[3] != reference_alleles[mat.split('\t')[2].split(';')[0]][0]:
 			out_ase.write(mat.split('\t')[0]+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][2])+'\t'+mat.split('\t')[2].split(';')[0]+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][0])+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][1])+'\t'+mat.split('\t')[6]+'\t'+mat.split('\t')[5]+'\t'+'\t'.join(mat.split('\t')[7:]))
 		else:
-			out_ase.write(mat)
+			out_ase.write(mat.split('\t')[0]+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][2])+'\t'+mat.split('\t')[2].split(';')[0]+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][0])+'\t'+str(reference_alleles[mat.split('\t')[2].split(';')[0]][1])+'\t'+mat.split('\t')[5]+'\t'+mat.split('\t')[6]+'\t'+'\t'.join(mat.split('\t')[7:]))
 
 out_ase.close()
 
@@ -115,6 +115,6 @@ for pat in ase_pat:
 		if pat.split('\t')[3] != reference_alleles[pat.split('\t')[2].split(';')[0]][0]:
 			out_ase.write(pat.split('\t')[0]+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][2])+'\t'+pat.split('\t')[2].split(';')[0]+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][0])+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][1])+'\t'+pat.split('\t')[6]+'\t'+pat.split('\t')[5]+'\t'+'\t'.join(pat.split('\t')[7:]))
 		else:
-			out_ase.write(pat)
+			out_ase.write(pat.split('\t')[0]+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][2])+'\t'+pat.split('\t')[2].split(';')[0]+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][0])+'\t'+str(reference_alleles[pat.split('\t')[2].split(';')[0]][1])+'\t'+pat.split('\t')[5]+'\t'+pat.split('\t')[6]+'\t'+'\t'.join(pat.split('\t')[7:]))
 
 out_ase.close()
