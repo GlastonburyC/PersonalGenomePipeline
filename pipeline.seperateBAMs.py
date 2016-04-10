@@ -139,45 +139,33 @@ def translateReadCord(mline,PARENT):
 def compareHapReads(mline,pline):
 	flag=''
 	if mline.qname == pline.qname:
-		if mline.pos == pline.pos:
-			if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
-				 y = random.random()
-				 if y <0.5:
-				 	mline.tags+=[('HT','random')]
-				 	to_write=mline
-				 	flag='M'
-				 else:
-				 	pline.tags+=[('HT','random')]
-				 	to_write=pline
-				 	flag='P'
-			elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 1:
-				pline.tags+=[('HT','best')]
-				to_write=pline
-				flag='P'
-			else:
-				mline.tags+=[('HT','best')]
-				to_write=mline
-				flag='M'
+		if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
+			 y = random.random()
+			 if y <0.5:
+			 	mline.tags+=[('HT','random')]
+			 	to_write=mline
+			 	flag='M'
+			 else:
+			 	pline.tags+=[('HT','random')]
+			 	to_write=pline
+			 	flag='P'
+		elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 1:
+			pline.tags+=[('HT','best')]
+			to_write=pline
+			flag='P'
 		else:
-			if checkMAPQ(pline.tags[2][1],mline.tags[2][1]) == 0:
-				y = random.random()
-				if y <0.5:
-					mline.tags+=[('HT','random')]
-					to_write=mline
-					flag='M'
-				else:
-					pline.tags+=[('HT','random')]
-					to_write=pline
-					flag='P'
-			elif checkMAPQ(pline.tags[2][1],mline.tags[2][1]) ==1:
-				pline.tags+=[('HT','best')]
-				to_write=pline
-				flag='P'
-			else:
-				mline.tags+=[('HT','best')]
-				to_write=mline
-				flag='M'
+			mline.tags+=[('HT','best')]
+			to_write=mline
+			flag='M'
 	return to_write,flag
+
+def compareAndWrite(matr,patr,best_mat,best_pat):
+	to_write,flag = compareHapReads(matr,patr)
+	if flag=='M':
+		best_mat.write(to_write)
+	else:
+		best_pat.write(to_write)
+
 
 ##### END OF FUNCTIONS #####
 
@@ -262,28 +250,18 @@ while (i < mat_line_number) and (j < pat_line_number):
 		#matr2=translateReadCord(matr2,PARENT='M')
 		#patr1=translateReadCord(patr1,PARENT='P')
 		#patr2=translateReadCord(patr2,PARENT='P')
-		to_write,flag = compareHapReads(matr1,patr1)
-		to_write2,flag2 = compareHapReads(matr2,patr2)
-		if flag=='M':
-			best_mat.write(to_write)
-		else:
-			best_pat.write(to_write)
-		if flag2=='M':
-			best_mat.write(to_write)
-		else:
-			best_pat.write(to_write)
+
+		# first pair
+		compareAndWrite(matr1,patr1,best_mat,best_pat)
+		compareAndWrite(matr2,patr2,best_mat,best_pat)
+
 	elif (len(patr_list) == 1) and (len(matr_list) == 1):
 		matr1=matr_list[0]
 		patr1=patr_list[0]
 		if (matr1.is_read1 and patr1.is_read1) or (matr1.is_read2 and patr1.is_read2):
 			#matr1=translateReadCord(matr1,PARENT='M')
 			#patr1=translateReadCord(patr1,PARENT='P')
-			to_write,flag = compareHapReads(matr1,patr1)
-			if flag=='M':
-				best_mat.write(to_write)
-			else:
-				best_pat.write(to_write)
-
+			compareAndWrite(matr1,patr1,best_mat,best_pat)
 
 best_pat.close()
 best_mat.close()
