@@ -5,7 +5,7 @@ module load vcftools
 module load R  # change depending on your cluster environment
 module load python/2.7
 
-java -jar vcf2diploid.jar -id $SAMPLE_ID -chr hg19.fa -vcf "$SAMPLE_ID".vcf -outDir $SAMPLE_ID
+java -jar vcf2diploid.jar -id "$SAMPLE_ID"/$SAMPLE_ID -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf -outDir $SAMPLE_ID
 
 cd $SAMPLE_ID
 mv *_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
