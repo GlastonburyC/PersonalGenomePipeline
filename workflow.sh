@@ -5,7 +5,7 @@ module load vcftools
 module load R  # change depending on your cluster environment
 module load python/2.7
 
-java -jar vcf2diploid.jar -id "$SAMPLE_ID"/$SAMPLE_ID -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf -outDir $SAMPLE_ID
+java -jar vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf -outDir $SAMPLE_ID
 
 cd $SAMPLE_ID
 mv *_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
@@ -91,9 +91,8 @@ java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".paternal.renamed.fa -T ASEReadCou
 
 '''Currently, the ASE output is relative to the haplotype reference used (Maternal reference or paternal reference) 
    i.e. REF in ASE.mat.csv = maternal allele etc.To assess REF Bias (which we should not expect due to using Personal genomes), 
-   and for easier interpretation, its better to have ASE in terms of universal REF / ALT. i.e. all adding up all the REF/ALT counts 
+   and for easier interpretation, its better to have ASE in terms of universal REF / ALT. i.e. adding up all the REF/ALT counts 
    for each haplotype, consolidated into a single ASE file per individual.'''
-
 
 python ASERefCord.py "$SAMPLE_ID".ASE.mat.csv "$SAMPLE_ID".ASE.pat.csv "$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf "$SAMPLE_ID".maternal.alleles.csv "$SAMPLE_ID".paternal.alleles.csv "$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID".paternal.ref.csv
 
