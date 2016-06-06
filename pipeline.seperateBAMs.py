@@ -282,10 +282,10 @@ os.system('samtools sort consensus.mat.filtered.bam -o consensus.mat.filtered.so
 os.system('rm consensus.pat.filtered.bam')
 os.system('rm consensus.mat.filtered.bam')
 
-os.system('ReadGroups..')
+#os.system('ReadGroups..')
 
-os.system('samorder')
-os.system('vcforder')
+#os.system('samorder')
+#os.system('vcforder')
 
 os.system('bgzip 131.hets.vcf')
 os.system('tabix 131.hets.vcf')
