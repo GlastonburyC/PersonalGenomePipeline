@@ -1,4 +1,4 @@
-$THREAD_NO=12
+$THREAD_NO=8
 
 module load samtools
 module load vcftools
