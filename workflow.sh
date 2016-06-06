@@ -10,6 +10,8 @@ java -jar vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMP
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
+# Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
+
 # Maternal genome generation (suffix arrays etc)
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
 
@@ -17,10 +19,12 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/paternal/ --genomeFastaFiles *_"$SAMPLE_ID"_paternal.fa
 
 #Align paternal
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID" PU:Illumina PL:Illumina LB:"$SAMPLE_ID" SM:"$SAMPLE_ID" CN:Seq_centre --outSAMtype BAM SortedByCoordinate
 
 #Align maternal
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outFilterMultimapNmax 30 --sjdbOverhang 48 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattrIHstart 0 --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --chimSegmentMin 15 --outMultimapperOrder Random --outFilterMismatchNmax 4 --outSAMunmapped Within --outSAMattributes NH HI NM MD
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID" PU:Illumina PL:Illumina LB:"$SAMPLE_ID" SM:"$SAMPLE_ID" CN:Seq_centre --outSAMtype BAM SortedByCoordinate
+
+# Add standard reference alignment too.
 
 ########################################
 
