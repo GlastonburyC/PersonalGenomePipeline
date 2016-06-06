@@ -7,9 +7,8 @@ module load python/2.7
 
 java -jar vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf -outDir $SAMPLE_ID
 
-cd $SAMPLE_ID
-mv *_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
-mv *_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
+mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
+mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
 # Maternal genome generation (suffix arrays etc)
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
