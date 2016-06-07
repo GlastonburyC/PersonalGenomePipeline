@@ -10,6 +10,8 @@ java -jar vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMP
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
+# Make BAMS sorted by read name
+# convert BAMS to fastq 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
 # Add trimming and adapter removal step.
 
