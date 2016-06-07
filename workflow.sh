@@ -11,6 +11,7 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
+# Add trimming and adapter removal step.
 
 # Maternal genome generation (suffix arrays etc)
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
