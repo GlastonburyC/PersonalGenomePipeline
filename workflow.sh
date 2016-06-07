@@ -11,7 +11,11 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
 # Make BAMS sorted by read name
+../../software/samtools-1.3.1/samtools sort -n "$SAMPLE_ID"_sorted.bam -o "$SAMPLE_ID"_sorted.bam.sorted
+
 # convert BAMS to fastq 
+../../software/bedtools2/bin/bedtools bamtofastq -i "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted -fq "$SAMPLE_ID".f2.fq -fq2 "$SAMPLE_ID".f1.fq
+
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
 # Add trimming and adapter removal step.
 
