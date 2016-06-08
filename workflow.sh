@@ -1,5 +1,5 @@
 # This should all be excuted from the /data/ directory.
-$THREAD_NO=8
+THREAD_NO=8
 
 java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19/hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf.gz -outDir $SAMPLE_ID
 
@@ -16,22 +16,32 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 trim_galore -stringency 5 -q 1 -o "$SAMPLE_ID" --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq
 
 # Add trimming and adapter removal step.
-perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq -fastq2 "$SAMPLE_ID"/"$SAMPLE_ID".f2_val_2.fq -out_good "$SAMPLE_ID" -trim_tail_left 5 -trim_tail_right 5 -min_len 20
+perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq -fastq2 "$SAMPLE_ID"/"$SAMPLE_ID".f2_val_2.fq -out_good "$SAMPLE_ID"/"$SAMPLE_ID" -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f2_val_2.fq
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq_trimming_report.txt
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq_trimming_report.txt
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_1_singletons.fastq
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_2_singletons.fastq
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_prinseq_bad*
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq
+rm "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted # Ensure this is the name after replacing BAM_IDs with TwinUK IDs.
 # Maternal genome generation (suffix arrays etc)
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal --genomeFastaFiles "$SAMPLE_ID"/maternal/chr*_"$SAMPLE_ID"_maternal.fa
 
 #Paternal genome generation (suffix arrays etc)
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/paternal/ --genomeFastaFiles *_"$SAMPLE_ID"_paternal.fa
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/paternal --genomeFastaFiles "$SAMPLE_ID"/paternal/chr*_"$SAMPLE_ID"_paternal.fa
 
 #Align paternal
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_paternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_paternal SM:"$SAMPLE_ID"_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir "$SAMPLE_ID"/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_paternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_paternal SM:"$SAMPLE_ID"_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
 
 #Align maternal
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir "$SAMPLE_ID"/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir "$SAMPLE_ID"/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
 
 # Add standard reference alignment too.
-../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f1_val_1.fq "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.f2_val_2.fq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
+../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
 
 ########################################
 
