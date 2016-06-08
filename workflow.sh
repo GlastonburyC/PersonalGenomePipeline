@@ -17,7 +17,10 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 ../../software/bedtools2/bin/bedtools bamtofastq -i "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted -fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq -fq2 "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq
 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
+trim_galore -stringency 5 -q 1 -o "$SAMPLE_ID" --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq
+
 # Add trimming and adapter removal step.
+perl prinseq-lite.pl -fastq TWPID3833_B_ks.trimQ20/_EGAZ00001039146_EB_TWPID3833_B_1_val_1.fq -fastq2 TWPID3833_B_ks.trimQ20/_EGAZ00001039146_EB_TWPID3833_B_2_val_2.fq -out_good TWPID3833_B_ks.trimQ20/test -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 
 # Maternal genome generation (suffix arrays etc)
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
