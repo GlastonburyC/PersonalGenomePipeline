@@ -1,11 +1,7 @@
+# This should all be excuted from the /data/ directory.
 $THREAD_NO=8
 
-module load samtools
-module load vcftools
-module load R  # change depending on your cluster environment
-module load python/2.7
-
-java -jar vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf -outDir $SAMPLE_ID
+java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19/hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf.gz -outDir $SAMPLE_ID
 
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$SAMPLE_ID"/maternal/
 mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
