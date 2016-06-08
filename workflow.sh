@@ -36,13 +36,28 @@ rm "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted # Ensure this is the name after r
 
 #Align paternal
 ../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir "$SAMPLE_ID"/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_paternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_paternal SM:"$SAMPLE_ID"_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
-
+mv Aligned.sortedByCoord.out.bam "$SAMPLE_ID"/paternal/"$SAMPLE_ID"_pat.sorted.bam
+mv Chimeric.out.junction "$SAMPLE_ID"/paternal/"$SAMPLE_ID"_pat.Chimeric.out.junction
+mv Chimeric.out.sam "$SAMPLE_ID"/paternal/"$SAMPLE_ID"_pat.Chimeric.out.sam
+mv Log.final.out "$SAMPLE_ID"/paternal/"$SAMPLE_ID"_pat.Log.final.out
+mv SJ.out.tab "$SAMPLE_ID"/paternal/"$SAMPLE_ID"_pat.SJ.out.tab
 #Align maternal
 ../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir "$SAMPLE_ID"/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
-
+mv Aligned.sortedByCoord.out.bam "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.sorted.bam
+mv Chimeric.out.junction "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.Chimeric.out.junction
+mv Chimeric.out.sam "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.Chimeric.out.sam
+mv Log.final.out "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.Log.final.out
+mv SJ.out.tab "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.SJ.out.tab
 # Add standard reference alignment too.
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
 
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate
+mv Aligned.sortedByCoord.out.bam "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_ref.sorted.bam
+mv Chimeric.out.junction "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_ref.Chimeric.out.junction
+mv Chimeric.out.sam "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_ref.Chimeric.out.sam
+mv Log.final.out "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_ref.Log.final.out
+mv SJ.out.tab "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_ref.SJ.out.tab
+rm Log.out
+rm Log.progress.out
 ########################################
 
 vcf-sort -c "$SAMPLE_ID".hets.GATK.vcf > "$SAMPLE_ID".hets.GATK.sorted.vcf
