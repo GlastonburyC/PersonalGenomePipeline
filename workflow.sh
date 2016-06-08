@@ -16,7 +16,7 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 trim_galore -stringency 5 -q 1 -o "$SAMPLE_ID" --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq
 
 # Add trimming and adapter removal step.
-perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq -fastq2 "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq -out_good "$SAMPLE_ID" -trim_tail_left 5 -trim_tail_right 5 -min_len 20
+perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq "$SAMPLE_ID"/"$SAMPLE_ID".f1_val_1.fq -fastq2 "$SAMPLE_ID"/"$SAMPLE_ID".f2_val_2.fq -out_good "$SAMPLE_ID" -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 
 # Maternal genome generation (suffix arrays etc)
 ../STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir "$SAMPLE_ID"/maternal/ --genomeFastaFiles *_"$SAMPLE_ID"_maternal.fa
