@@ -83,8 +83,8 @@ for i in {1..22}
 do
 	sed -i 's/'"$i"'_maternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 	sed -i 's/'"$i"'_paternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
-	cat "$SAMPLE_ID"/paternal/"$i"_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
-	cat "$SAMPLE_ID"/maternal/"$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_maternal.fa
+	cat "$SAMPLE_ID"/paternal/chr"$i"_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
+	cat "$SAMPLE_ID"/maternal/chr"$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_maternal.fa
 
 done
 
