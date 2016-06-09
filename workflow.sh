@@ -96,23 +96,23 @@ sed -i 's/X_maternal/X/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 sed -i 's/Y_maternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 sed -i 's/MT_maternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 
-cat X_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
-cat Y_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
-cat MT_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat "$SAMPLE_ID"/paternal/chrX_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat "$SAMPLE_ID"/paternal/chrY_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat "$SAMPLE_ID"/paternal/chrM_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
 
-cat X_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
-cat Y_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
-cat MT_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat "$SAMPLE_ID"/maternal/chrX_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat "$SAMPLE_ID"/maternal/chrY_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat "$SAMPLE_ID"/maternal/chrM_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
 
 #################################
 
 # rename maternal and paternal fasta files with correct scaffold/chr name.
-python renameFaChr.py "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa
+python renameFaChr.py "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa
 
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
-python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf
+python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf
 
-python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
+python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether it's the maternal or paternal haplotype.
 haplotypeVCFAlleles.py "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
