@@ -281,4 +281,4 @@ os.system('../software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'maternal/
 os.system('rm '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
 os.system('rm '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
 
-os.system('bgzip '+sys.argv[1]+'/'+sys.argv[1]+'.hets.GATK.vcf')
+os.system('pigz --best -k '+sys.argv[1]+'/'+sys.argv[1]+'.hets.GATK.vcf')
