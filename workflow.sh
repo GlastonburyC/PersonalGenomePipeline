@@ -65,9 +65,10 @@ rm "$SAMPLE_ID"_ref.Log.progress.out
 ########################################
 #
 ## Produce consensus bams, in which the best read per haplotype is selected.
+python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py 1152
 
-
-vcf-sort -c "$SAMPLE_ID".hets.GATK.vcf > "$SAMPLE_ID".hets.GATK.sorted.vcf
+# Sort the VCFs else picard/GATK throws a fit.
+vcf-sort -c "$SAMPLE_ID".hets.phased.vcf > "$SAMPLE_ID".hets.GATK.sorted.vcf
 
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
