@@ -77,48 +77,48 @@ rm "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
 
-cp "$SAMPLE_ID"/"$SAMPLE_ID".paternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
-cp "$SAMPLE_ID"/"$SAMPLE_ID".maternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+cp "$SAMPLE_ID"/paternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+cp "$SAMPLE_ID"/maternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 for i in {1..22}
 do
-	sed -i 's/'"$i"'_maternal/'"$i"'/g' "$SAMPLE_ID".maternal.edit.chain
-	sed -i 's/'"$i"'_paternal/'"$i"'/g' "$SAMPLE_ID".paternal.edit.chain
-	cat "$i"_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID".all_paternal.fa
-	cat "$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID".all_maternal.fa
+	sed -i 's/'"$i"'_maternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+	sed -i 's/'"$i"'_paternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+	cat "$SAMPLE_ID"/paternal/"$i"_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
+	cat "$SAMPLE_ID"/maternal/"$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_maternal.fa
 
 done
 
-sed -i 's/X_paternal/X/g' "$SAMPLE_ID".paternal.edit.chain
-sed -i 's/Y_paternal/Y/g' "$SAMPLE_ID".paternal.edit.chain
-sed -i 's/MT_paternal/MT/g' "$SAMPLE_ID".paternal.edit.chain
+sed -i 's/X_paternal/X/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+sed -i 's/Y_paternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+sed -i 's/MT_paternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
 
-sed -i 's/X_maternal/X/g' "$SAMPLE_ID".maternal.edit.chain
-sed -i 's/Y_maternal/Y/g' "$SAMPLE_ID".maternal.edit.chain
-sed -i 's/MT_maternal/MT/g' "$SAMPLE_ID".maternal.edit.chain
+sed -i 's/X_maternal/X/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+sed -i 's/Y_maternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+sed -i 's/MT_maternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 
-cat X_131_paternal.fa >> "$SAMPLE_ID".all_paternal.fa
-cat Y_131_paternal.fa >> "$SAMPLE_ID".all_paternal.fa
-cat MT_131_paternal.fa >> "$SAMPLE_ID".all_paternal.fa
+cat X_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat Y_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat MT_131_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
 
-cat X_131_maternal.fa >> "$SAMPLE_ID".all_maternal.fa
-cat Y_131_maternal.fa >> "$SAMPLE_ID".all_maternal.fa
-cat MT_131_maternal.fa >> "$SAMPLE_ID".all_maternal.fa
+cat X_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat Y_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat MT_131_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
 
 #################################
 
 # rename maternal and paternal fasta files with correct scaffold/chr name.
-python renameFaChr.py "$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID".paternal.renamed.fa
+python renameFaChr.py "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa
 
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
-python mod.py vcf "$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID".maternal.vcf
+python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf
 
-python mod.py vcf "$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID".paternal.vcf
+python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.renamed.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether it's the maternal or paternal haplotype.
-haplotypeVCFAlleles.py "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf
+haplotypeVCFAlleles.py "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
 
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R="$SAMPLE_ID".paternal.renamed.fa O="$SAMPLE_ID".paternal.renamed.dict
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R="$SAMPLE_ID".maternal.renamed.fa O="$SAMPLE_ID".maternal.renamed.dict
+/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".paternal.renamed.fa O="$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.dict
+/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.fa O=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.dict
 
 /usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/consensus.mat.filtered.sorted.bam O="$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 /usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/consensus.pat.filtered.sorted.bam O="$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
