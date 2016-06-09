@@ -84,25 +84,25 @@ do
 	sed -i 's/'"$i"'_maternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 	sed -i 's/'"$i"'_paternal/'"$i"'/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
 	cat "$SAMPLE_ID"/paternal/chr"$i"_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
-	cat "$SAMPLE_ID"/maternal/chr"$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_maternal.fa
+	cat "$SAMPLE_ID"/maternal/chr"$i"_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa
 
 done
 
 sed -i 's/X_paternal/X/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
-sed -i 's/Y_paternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
-sed -i 's/MT_paternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+#sed -i 's/Y_paternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+sed -i 's/M_paternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
 
 sed -i 's/X_maternal/X/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
-sed -i 's/Y_maternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
-sed -i 's/MT_maternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+#sed -i 's/Y_maternal/Y/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
+sed -i 's/M_maternal/MT/g' "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 
-cat "$SAMPLE_ID"/paternal/chrX_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
-cat "$SAMPLE_ID"/paternal/chrY_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
-cat "$SAMPLE_ID"/paternal/chrM_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa
+cat "$SAMPLE_ID"/paternal/chrX_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
+#cat "$SAMPLE_ID"/paternal/chrY_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
+cat "$SAMPLE_ID"/paternal/chrM_"$SAMPLE_ID"_paternal.fa >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa
 
-cat "$SAMPLE_ID"/maternal/chrX_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
-cat "$SAMPLE_ID"/maternal/chrY_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
-cat "$SAMPLE_ID"/maternal/chrM_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa
+cat "$SAMPLE_ID"/maternal/chrX_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa
+#cat "$SAMPLE_ID"/maternal/chrY_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa
+cat "$SAMPLE_ID"/maternal/chrM_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa
 
 #################################
 
