@@ -68,13 +68,13 @@ rm "$SAMPLE_ID"_ref.Log.progress.out
 python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py 1152
 
 # Sort the VCFs else picard/GATK throws a fit.
-vcf-sort -c "$SAMPLE_ID".hets.phased.vcf > "$SAMPLE_ID".hets.GATK.sorted.vcf
+../software/vcftools/src/perl/vcf-sort -c "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz > "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
 
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
 
-cp "$SAMPLE_ID".paternal.chain "$SAMPLE_ID".paternal.edit.chain
-cp "$SAMPLE_ID".maternal.chain "$SAMPLE_ID".maternal.edit.chain
+cp "$SAMPLE_ID"/"$SAMPLE_ID".paternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain
+cp "$SAMPLE_ID"/"$SAMPLE_ID".maternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain
 for i in {1..22}
 do
 	sed -i 's/'"$i"'_maternal/'"$i"'/g' "$SAMPLE_ID".maternal.edit.chain
