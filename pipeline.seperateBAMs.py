@@ -53,7 +53,7 @@ def MapParserInner(PARENT,chrom):
 def MapParser(PARENT):
 	# iterate through all chromosomes 1-22, X, M
 	Map_object={}
-	for file in glob.glob("*.map"):
+	for file in glob.glob(sys.argv[1]+'/'+"*.map"):
 		chr=file.split('_')[0]
 		Map_object[str(chr)]=MapParserInner(PARENT,chrom=file)
 	#dictionary, key = chromosome, values are a dictionary of blocks.
@@ -174,14 +174,12 @@ def compareAndWrite(matr,patr,best_mat,best_pat):
 maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
-os.system("samtools sort -n Maternal.Aligned.sortedByCoord.out.bam -o Maternal.Aligned.sortedByCoord.out.sorted")
-os.system("samtools sort -n Paternal.Aligned.sortedByCoord.out.bam -o Paternal.Aligned.sortedByCoord.out.sorted")
-os.system("mv Paternal.Aligned.sortedByCoord.out.sorted Paternal.Aligned.sortedByCoord.out.bam")
-os.system("mv Maternal.Aligned.sortedByCoord.out.sorted Maternal.Aligned.sortedByCoord.out.bam")
+os.system("../software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.sorted")
+os.system("../software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.sorted")
+os.system("mv "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.sorted "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam")
+os.system("mv "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.sorted "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam")
 
 
-# This can be tidied up significantly, this is where the comparisons take place of reads mapping
-# across two haplotypes. 
 # A new SAM flag is introduced HT = Haplotype. With this flag it's possible 
 # to tell which haplotype a read mapped best to:
 # P or M denote Paternal or Maternal Haplotype
@@ -189,25 +187,25 @@ os.system("mv Maternal.Aligned.sortedByCoord.out.sorted Maternal.Aligned.sortedB
 # SRM = same mapping position, same MAPQ, randomly selected
 # DBM = different mapping position, best MAPQ selected
 # DRM = different mapping position, same MAPQ, randomly selected
-# Output to Consensus.bam
+# Output to Consensus.mat.bam or Consensus.pat.bam
 
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
+mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam", 'rb')
 mat_line_number = 0
 for mline in mat.fetch(until_eof=True):
 	mat_line_number += 1
 
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
+pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam", 'rb')
 pat_line_number = 0
 for pline in pat.fetch(until_eof=True):
 	pat_line_number += 1
 
 
 #consensus = pysam.Samfile('consensus.bam','wb',template=mat)
-mat = pysam.Samfile('Maternal.Aligned.sortedByCoord.out.bam', 'rb')
-pat = pysam.Samfile('Paternal.Aligned.sortedByCoord.out.bam', 'rb')
+mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam", 'rb')
+pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam", 'rb')
 
-best_mat = pysam.Samfile('consensus.mat.bam','wb',template=mat)
-best_pat = pysam.Samfile('consensus.pat.bam','wb',template=mat)
+best_mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam','wb',template=mat)
+best_pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam','wb',template=mat)
 
 
 matr = next(mat)
@@ -259,11 +257,12 @@ while (i < mat_line_number) and (j < pat_line_number):
 best_pat.close()
 best_mat.close()
 
-vcf_reader = vcf.Reader(open('131.phased.vcf','r'))
-vcf_writer = vcf.Writer(open('131.hets.GATK.vcf','w'),vcf_reader)
+ID=str(sys.argv[1])
+vcf_reader = vcf.Reader(open(sys.argv[1]+'/'+sys.argv[1]+'.vcf.gz','r'))
+vcf_writer = vcf.Writer(open(sys.argv[1]+'/'+sys.argv[1]+'.hets.phased.vcf','w'),vcf_reader)
 for record in vcf_reader:
   if len(record.get_hets()) != 0:
-  	if record.genotype('131')['GT'][1]=='|':
+  	if record.genotype(ID)['GT'][1]=='|':
   		if record.QUAL >= 30:
   			vcf_writer.write_record(record)
 vcf_writer.close()
@@ -272,20 +271,14 @@ vcf_writer.close()
 
 # filter the BAM file
 
-os.system('samtools view -b -F4 -q 30 consensus.mat.bam -o consensus.mat.filtered.bam')
-os.system('samtools view -b -F4 -q 30 consensus.pat.bam -o consensus.pat.filtered.bam')
+os.system('../software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
+os.system('../software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
 
 
-os.system('samtools sort consensus.pat.filtered.bam -o consensus.pat.filtered.sorted.bam')
-os.system('samtools sort consensus.mat.filtered.bam -o consensus.mat.filtered.sorted.bam')
+os.system('../software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.sorted.bam')
+os.system('../software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.sorted.bam')
 
-os.system('rm consensus.pat.filtered.bam')
-os.system('rm consensus.mat.filtered.bam')
+os.system('rm '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
+os.system('rm '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
 
-#os.system('ReadGroups..')
-
-#os.system('samorder')
-#os.system('vcforder')
-
-os.system('bgzip 131.hets.vcf')
-os.system('tabix 131.hets.vcf')
+os.system('bgzip '+sys.argv[1]+'/'+sys.argv[1]+'.hets.GATK.vcf')
