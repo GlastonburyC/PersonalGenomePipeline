@@ -70,6 +70,10 @@ python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py 1152
 # Sort the VCFs else picard/GATK throws a fit.
 ../software/vcftools/src/perl/vcf-sort -c "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz > "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
 
+pigz --best -k "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
+
+rm "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz
+rm "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
 
