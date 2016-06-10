@@ -109,10 +109,21 @@ cat "$SAMPLE_ID"/maternal/chrM_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal
 # rename maternal and paternal fasta files with correct scaffold/chr name.
 python ../software/PersonalGenomePipeline/renameFaChr.py "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa
 
-# Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
-python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf
+pigz -d "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz
 
-python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
+# Modify vcf so all chromosomes are prefixed with 'chr'
+awk '{if($0 !~ /^#/) print "chr"$0; else print $0}' 1152.hets.GATK.sorted.vcf > 1152.hets.GATK.sorted.withChr.vcf
+
+# At this point, the VCF, all.fasta and chain files are prefixed with 'chr' - so they are compatible.
+
+mv "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
+
+pigz "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
+
+# Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
+python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf
+
+python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether it's the maternal or paternal haplotype.
 haplotypeVCFAlleles.py "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
