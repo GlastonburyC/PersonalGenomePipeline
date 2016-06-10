@@ -126,8 +126,8 @@ python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".
 python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether it's the maternal or paternal haplotype.
-haplotypeVCFAlleles.py "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.vcf
-
+python ../software/PersonalGenomePipeline/haplotypeVCFAlleles.py "$SAMPLE_ID" "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf
+#
 /usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".paternal.renamed.fa O="$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.dict
 /usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.fa O=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.dict
 
