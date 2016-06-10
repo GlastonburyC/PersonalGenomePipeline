@@ -65,7 +65,7 @@ rm "$SAMPLE_ID"_ref.Log.progress.out
 ########################################
 #
 ## Produce consensus bams, in which the best read per haplotype is selected.
-python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py 1152
+python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py "$SAMPLE_ID"
 
 # Sort the VCFs else picard/GATK throws a fit.
 ../software/vcftools/src/perl/vcf-sort -c "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz > "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
@@ -107,7 +107,7 @@ cat "$SAMPLE_ID"/maternal/chrM_"$SAMPLE_ID"_maternal.fa >> "$SAMPLE_ID"/maternal
 #################################
 
 # rename maternal and paternal fasta files with correct scaffold/chr name.
-python renameFaChr.py "$SAMPLE_ID"/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".all_paternal.fa "$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.fa
+python ../software/PersonalGenomePipeline/renameFaChr.py "$SAMPLE_ID"/maternal/"$SAMPLE_ID".all_maternal.fa "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".all_paternal.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa
 
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
 python mod.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/"$SAMPLE_ID".maternal.vcf
