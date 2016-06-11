@@ -150,15 +150,18 @@ java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam
 mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
 mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
 
-java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".maternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.mat.csv -I "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.sorted.bam -sites "$SAMPLE_ID".maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
-java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".paternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.pat.csv -I "$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.sorted.bam "$SAMPLE_ID".paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+~/scratch/software/samtools-1.3.1/samtools index "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
+~/scratch/software/samtools-1.3.1/samtools index "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
+
+java -jar ~/scratch/software/GenomeAnalysisTK.jar -R "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID"/maternal/"$SAMPLE_ID".ASE.mat.csv -I "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam -sites "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+java -jar ~/scratch/software/GenomeAnalysisTK.jar -R "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID"/paternal/"$SAMPLE_ID".ASE.pat.csv -I "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam -sites "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 
 '''Currently, the ASE output is relative to the haplotype reference used (Maternal reference or paternal reference) 
    i.e. REF in ASE.mat.csv = maternal allele etc.To assess REF Bias (which we should not expect due to using Personal genomes), 
    and for easier interpretation, its better to have ASE in terms of universal REF / ALT. i.e. adding up all the REF/ALT counts 
    for each haplotype, consolidated into a single ASE file per individual.'''
 
-python ASERefCord.py "$SAMPLE_ID".ASE.mat.csv "$SAMPLE_ID".ASE.pat.csv "$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf "$SAMPLE_ID".maternal.alleles.csv "$SAMPLE_ID".paternal.alleles.csv "$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID".paternal.ref.csv
+python ../software/PersonalGenomePipeline/ASERefCord.py "$SAMPLE_ID".ASE.mat.csv "$SAMPLE_ID".ASE.pat.csv "$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf "$SAMPLE_ID".maternal.alleles.csv "$SAMPLE_ID".paternal.alleles.csv "$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID".paternal.ref.csv
 
 #################################
 
