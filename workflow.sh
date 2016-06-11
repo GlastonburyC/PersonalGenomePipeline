@@ -67,8 +67,10 @@ rm "$SAMPLE_ID"_ref.Log.progress.out
 ## Produce consensus bams, in which the best read per haplotype is selected.
 python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py "$SAMPLE_ID"
 #
-for all variants without an rsid - assign them 'chr-pos'.
+#for all variants without an rsid - assign them 'chr-pos'.
+python ../software/PersonalGenomePipeline/nameVariants.py "$SAMPLE_ID" "$SAMPLE_ID".hets.phased.vcf.gz "$SAMPLE_ID".hets.phased.vcf.gz2
 
+mv "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz2 "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz
 
 # Sort the VCFs else picard/GATK throws a fit.
 ../software/vcftools/src/perl/vcf-sort -c "$SAMPLE_ID"/"$SAMPLE_ID".hets.phased.vcf.gz > "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
