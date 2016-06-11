@@ -147,6 +147,9 @@ mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted2.bam "$SAMPL
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam O=/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 
+mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
+mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
+
 java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".maternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.mat.csv -I "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.sorted.bam -sites "$SAMPLE_ID".maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".paternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.pat.csv -I "$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.sorted.bam "$SAMPLE_ID".paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 
