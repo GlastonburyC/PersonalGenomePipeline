@@ -138,14 +138,14 @@ java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrRepla
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.bam O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 
 # both say maternal for chromosome because maternal was used as a template BAM when selecting best reads.
-samtools view -h "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam | sed -e 's/_maternal//g' >> "$SAMPLE_ID"/consensus.mat.filtered.sorted2.bam
-samtools view -h "$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.bam | sed -e 's/_maternal//g' >> "$SAMPLE_ID"/consensus.pat.filtered.sorted2.bam
+~/scratch/software/samtools-1.3.1/samtools view -h "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted2.bam
+mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted2.bam "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
 
-mv "$SAMPLE_ID"/consensus.mat.filtered.sorted2.bam "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam
-mv "$SAMPLE_ID"/consensus.pat.filtered.sorted2.bam "$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.bam
+~/scratch/software/samtools-1.3.1/samtools view -h "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted2.bam
+mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted2.bam "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
 
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar ReorderSam I="$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.sorted.bam R="$SAMPLE_ID".maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar ReorderSam I="$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.sorted.bam R="$SAMPLE_ID".paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam O=/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 
 java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".maternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.mat.csv -I "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.sorted.bam -sites "$SAMPLE_ID".maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 java -jar GenomeAnalysisTK.jar -R "$SAMPLE_ID".paternal.renamed.fa -T ASEReadCounter -o "$SAMPLE_ID".ASE.pat.csv -I "$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.sorted.bam "$SAMPLE_ID".paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
