@@ -121,18 +121,21 @@ mv "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/"$SAMPLE_
 pigz "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf
 
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
-python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf
+python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".maternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf
 
-python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf
+python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf "$SAMPLE_ID"/"$SAMPLE_ID".paternal.edit.chain "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether it's the maternal or paternal haplotype.
 python ../software/PersonalGenomePipeline/haplotypeVCFAlleles.py "$SAMPLE_ID" "$SAMPLE_ID".maternal.vcf "$SAMPLE_ID".paternal.vcf
 #
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".paternal.renamed.fa O="$SAMPLE_ID"/"$SAMPLE_ID".paternal.renamed.dict
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.fa O=""$SAMPLE_ID"/$SAMPLE_ID".maternal.renamed.dict
+mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf.maternal2.vcf "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf
+mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf.paternal2.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf
 
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/consensus.mat.filtered.sorted.bam O="$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
-/usr/lib/jvm/java-8-oracle/bin/java -jar picard-tools-2.1.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/consensus.pat.filtered.sorted.bam O="$SAMPLE_ID"/consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/paternal/$SAMPLE_ID".paternal.renamed.fa O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.dict
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R=""$SAMPLE_ID"/maternal/$SAMPLE_ID".maternal.renamed.fa O=""$SAMPLE_ID"/maternal/$SAMPLE_ID".maternal.renamed.dict
+
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.bam O="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.bam O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 
 # both say maternal for chromosome because maternal was used as a template BAM when selecting best reads.
 samtools view -h "$SAMPLE_ID"/consensus.mat.filtered.sorted.readGroup.bam | sed -e 's/_maternal//g' >> "$SAMPLE_ID"/consensus.mat.filtered.sorted2.bam
