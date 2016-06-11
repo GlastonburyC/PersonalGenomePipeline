@@ -145,7 +145,7 @@ mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted2.bam "$SAMPL
 mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted2.bam "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
 
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam O=/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam O="$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 R="$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 
 mv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
 mv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam2 "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
