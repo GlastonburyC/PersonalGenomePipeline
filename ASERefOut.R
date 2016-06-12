@@ -2,10 +2,12 @@
 
 args <- as.character(commandArgs(trailingOnly = TRUE))
 
-ase_mat = read.table(args[0],head=T,stringsAsFactors=F)
-ase_pat = read.table(args[1],head=T,stringsAsFactors=F)
+file1=args[1]
+file2=args[2]
+ase_mat = read.table(file1,head=T,stringsAsFactors=F)
+ase_pat = read.table(file2,head=T,stringsAsFactors=F)
 
-file_out= args[2]
+file_out= args[3]
 
 merged_ase=data.frame()
 
@@ -46,4 +48,3 @@ for(i in 1:dim(ase_pat)[1]){
 }
 
 write.table(merged_ase,file_out,col.names=T,row.names=F,sep="\t",quote=F)
-
