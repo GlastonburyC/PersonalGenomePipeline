@@ -1,11 +1,13 @@
 import vcf 
 import os
 import sys
-vcf_mat = vcf.Reader(open(sys.argv[0],'r'))
-vcf_mat_out = vcf.Writer(open('131.maternal2.vcf','w'),vcf_mat)
+
+vcf_mat = vcf.Reader(open(sys.argv[1]+'/maternal/'+sys.argv[2],'r'))
+
+vcf_mat_out = vcf.Writer(open(sys.argv[1]+'/maternal/'+sys.argv[2]+'.maternal2.vcf','w'),vcf_mat)
 
 for record in vcf_mat:
-	if record.genotype('131')['GT'].split('|')[1] == '1':
+	if record.genotype(sys.argv[1])['GT'].split('|')[1] == '1':
 		tmp=record
 		A1=tmp.REF
 		A2=tmp.ALT
@@ -16,15 +18,15 @@ for record in vcf_mat:
 		vcf_mat_out.write_record(record)
 
 vcf_mat_out.close()
-os.system('%s 131.maternal.vcf' % sys.argv[0])
+#os.system('%s 131.maternal.vcf' % sys.argv[2])
 
 import vcf 
 
-vcf_pat = vcf.Reader(open(sys.argv[1],'r'))
-vcf_pat_out = vcf.Writer(open('131.paternal2.vcf','w'),vcf_pat)
+vcf_pat = vcf.Reader(open(sys.argv[1]+'/paternal/'+sys.argv[3],'r'))
+vcf_pat_out = vcf.Writer(open(sys.argv[1]+'/paternal/'+sys.argv[3]+'.paternal2.vcf','w'),vcf_pat)
 
 for record in vcf_pat:
-	if record.genotype('131')['GT'].split('|')[0] == '1':
+	if record.genotype(sys.argv[1])['GT'].split('|')[0] == '1':
 		tmp=record
 		A1=tmp.REF
 		A2=tmp.ALT
@@ -35,4 +37,4 @@ for record in vcf_pat:
 		vcf_pat_out.write_record(record)
 
 vcf_pat_out.close()
-os.system('%s 131.paternal.vcf' % sys.argv[1])
+#os.system('%s 131.paternal.vcf' % sys.argv[2])
