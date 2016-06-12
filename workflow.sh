@@ -188,8 +188,8 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R "$SAMPLE_ID"/maternal/"$S
 # Gene-level counts without multi-mapping - for each haplotype. 
 
 # Haplotypic feature count (gene level counts)
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf -o "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf -o "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a gencode.v19.annotation.gtf -o "$SAMPLE_ID"/reference/"$SAMPLE_ID".GeneCount_Ref.txt "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf -o "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf -o "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o "$SAMPLE_ID"/reference/"$SAMPLE_ID".GeneCount_Ref.txt "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
 
 
