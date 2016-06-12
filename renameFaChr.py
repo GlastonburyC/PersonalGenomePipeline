@@ -2,9 +2,9 @@
    using specified file, rename.txt'''
 import sys
 
-fasta= open(sys.argv[0])
-newnames= open('rename.txt')
-newfasta= open(sys.argv[1], 'w')
+fasta= open(sys.argv[1])
+newnames= open('/home/centos/scratch/software/PersonalGenomePipeline/rename.txt','r')
+newfasta= open(sys.argv[2], 'w')
 
 for line in fasta:
     if line.startswith('>'):
@@ -17,9 +17,9 @@ fasta.close()
 newnames.close()
 newfasta.close()
 
-fasta= open(sys.argv[2])
-newnames= open('rename.txt')
-newfasta= open(sys.argv[3], 'w')
+fasta= open(sys.argv[3],'r')
+newnames= open('/home/centos/scratch/software/PersonalGenomePipeline/rename.txt','r')
+newfasta= open(sys.argv[4], 'w')
 
 for line in fasta:
     if line.startswith('>'):
