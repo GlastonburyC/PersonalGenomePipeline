@@ -1,12 +1,12 @@
 ''' This script takes the maternal and paternal coordinate translated BAM files and ASEReadCounterFiles and generates 
     the ASEReadCounter output for each haplotype with the alleles translated onto reference coordinates '''
-    
-
+   
 import vcf
 import sys
 import os
+
 # MATERNAL ASE (GATK output)
-ase_mat=open(sys.argv[0],'r')
+ase_mat=open(sys.argv[1],'r')
 tmp=[]
 snp_mat={}
 next(ase_mat)
@@ -15,7 +15,7 @@ for line in ase_mat:
 	snp_mat[tmp[2].split(';')[0]]=tmp[1]
 
 # PATERNAL ASE (GATK output)
-ase_pat=open(sys.argv[1],'r')
+ase_pat=open(sys.argv[2],'r')
 tmp=[]
 snp_pat={}
 next(ase_pat)
@@ -34,7 +34,7 @@ all_snps=merge_two_dicts(snp_mat,snp_pat)
 
 len(all_snps)
 # VCF containing all het SNPs used before ASEReadCounter breaking up into haplotype specific BAMs.
-vcf_ref = vcf.Reader(open(sys.argv[2],'r'))
+vcf_ref = vcf.Reader(open(sys.argv[3],'r'))
 
 reference_alleles={}
 for record in vcf_ref:
@@ -46,23 +46,23 @@ len(reference_alleles)
 	ASEReadCounter outputs indels as A/A when in fact it should be AAGG / A for example. 
         Correct alleles with full nucleotide string. (GATK not fixed as of 08/04/16)
 '''
-ase_mat=open(sys.argv[0],'r')
+ase_mat=open(sys.argv[1],'r')
 
-vcf_mat = vcf.Reader(open(sys.argv[3],'r'))
-vcf_pat = vcf.Reader(open(sys.argv[4],'r'))
+vcf_mat = vcf.Reader(open(sys.argv[4],'r'))
+vcf_pat = vcf.Reader(open(sys.argv[5],'r'))
 
-ase_mat_out=open(sys.argv[5],'w')
+ase_mat_out=open(sys.argv[6],'w')
 
 maternal_store={}
 for record in vcf_mat:
-	A1 = record.genotype('131')['GT'].split('|')[0]
-	A2 = record.genotype('131')['GT'].split('|')[1]
+	A1 = record.genotype(sys.argv[10])['GT'].split('|')[0]
+	A2 = record.genotype(sys.argv[10])['GT'].split('|')[1]
 	maternal_store[record.ID] = record.REF,record.ALT[0],A1,str(A2[0])
 
 paternal_store={}
 for record2 in vcf_pat:
-	A1 = record2.genotype('131')['GT'].split('|')[0]
-	A2 = record2.genotype('131')['GT'].split('|')[1]
+	A1 = record2.genotype(sys.argv[10])['GT'].split('|')[0]
+	A2 = record2.genotype(sys.argv[10])['GT'].split('|')[1]
 	paternal_store[record2.ID] = record2.REF,record2.ALT[0],A1,str(A2[0])
 
 header=next(ase_mat)
@@ -73,8 +73,8 @@ for line in (line.strip().split() for line in ase_mat):
 
 ase_mat_out.close()
 
-ase_pat=open(sys.argv[1],'r')
-ase_pat_out=open(sys.argv[6],'w')
+ase_pat=open(sys.argv[2],'r')
+ase_pat_out=open(sys.argv[7],'w')
 header=next(ase_pat)
 ase_pat_out.write(header)
 
@@ -84,14 +84,14 @@ for line in (line.strip().split() for line in ase_pat):
 
 ase_pat_out.close()
 
+os.system('mv %s %s' % (sys.argv[7], sys.argv[2]))
 os.system('mv %s %s' % (sys.argv[6], sys.argv[1]))
-os.system('mv %s %s' % (sys.argv[5], sys.argv[0]))
 
 ######### convert to reference alleles and reference position. ###########
 
-ase_mat=open(sys.argv[5],'r')
+ase_mat=open(sys.argv[1],'r')
 
-out_ase=open(sys.argv[7],'w')
+out_ase=open(sys.argv[8],'w')
 
 header=next(ase_mat)
 out_ase.write(header)
@@ -104,9 +104,9 @@ for mat in ase_mat:
 
 out_ase.close()
 
-ase_pat=open(sys.argv[6],'r')
+ase_pat=open(sys.argv[2],'r')
 
-out_ase=open(sys.argv[8],'w')
+out_ase=open(sys.argv[9],'w')
 
 header=next(ase_pat)
 out_ase.write(header)
