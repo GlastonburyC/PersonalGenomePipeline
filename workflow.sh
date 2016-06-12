@@ -165,8 +165,7 @@ java -jar ~/scratch/software/GenomeAnalysisTK.jar -R "$SAMPLE_ID"/paternal/"$SAM
    and for easier interpretation, its better to have ASE in terms of universal REF / ALT. i.e. adding up all the REF/ALT counts 
    for each haplotype, consolidated into a single ASE file per individual.'''
 
-python ../software/PersonalGenomePipeline/ASERefCord.py "$SAMPLE_ID"/maternal/"$SAMPLE_ID".ASE.mat.csv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".ASE.pat.csv "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf "$SAMPLE_ID".maternal.alleles.csv "$SAMPLE_ID".paternal.alleles.csv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.ref.csv
-
+python ../software/PersonalGenomePipeline/ASERefCord.py "$SAMPLE_ID"/maternal/"$SAMPLE_ID".ASE.mat.csv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".ASE.pat.csv "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.vcf "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.vcf "$SAMPLE_ID".maternal.alleles.csv "$SAMPLE_ID".paternal.alleles.csv "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.ref.csv
 #################################
 
 R CMD BATCH ASERefOut.R --args "$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID".paternal.ref.csv "$SAMPLE_ID".ASE.csv
