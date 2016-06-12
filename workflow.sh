@@ -51,6 +51,7 @@ mv "$SAMPLE_ID"_mat.Log.final.out "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.Log.fin
 mv "$SAMPLE_ID"_mat.SJ.out.tab "$SAMPLE_ID"/maternal/"$SAMPLE_ID"_mat.SJ.out.tab
 rm "$SAMPLE_ID"_mat.Log.out
 rm "$SAMPLE_ID"_mat.Log.progress.out
+
 # Add standard reference alignment too.
 
 ../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix "$SAMPLE_ID"_ref.
@@ -63,6 +64,9 @@ rm "$SAMPLE_ID"_ref.Log.out
 rm "$SAMPLE_ID"_ref.Log.progress.out
 ########################################
 #
+
+../software/samtools-1.3.1/samtools view -b -F4 -q 30 "$SAMPLE_ID"/reference/"$SAMPLE_ID"_ref.Aligned.sortedByCoord.out.bam -o "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
+
 ## Produce consensus bams, in which the best read per haplotype is selected.
 python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py "$SAMPLE_ID"
 #
@@ -177,8 +181,14 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R "$SAMPLE_ID"/maternal/"$S
 ../software/liftOver -gff gencode.v19.annotation.gtf "$SAMPLE_ID"/maternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf "$SAMPLE_ID".not_lifted.txt -minMatch=0.00000001
 ../software/liftOver -gff gencode.v19.annotation.gtf "$SAMPLE_ID"/paternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf "$SAMPLE_ID".not_lifted.txt -minMatch=0.00000001
 
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf -o "$SAMPLE_ID"/GeneCount_Mat.txt "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf -o "$SAMPLE_ID"/GeneCount_Pat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
-
+# remove '_parental' string from the chromosome column in the liftedOver GTFs so it matches with the BAM files.
  sed -i 's/_maternal//g' "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf
  sed -i 's/_paternal//g' "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf
+
+# Gene-level counts without multi-mapping - for each haplotype. 
+
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf -o "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/maternal/"$SAMPLE_ID".consensus.mat.filtered.sorted.readGroup.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf -o "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".consensus.pat.filtered.sorted.readGroup.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -T 8 -a gencode.v19.annotation.gtf -o "$SAMPLE_ID"/reference/"$SAMPLE_ID".GeneCount_Ref.txt "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
+
+
