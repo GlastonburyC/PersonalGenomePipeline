@@ -116,7 +116,7 @@ python ../software/PersonalGenomePipeline/renameFaChr.py "$SAMPLE_ID"/maternal/"
 pigz -d "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf.gz
 
 # Modify vcf so all chromosomes are prefixed with 'chr'
-awk '{if($0 !~ /^#/) print "chr"$0; else print $0}' 1152.hets.GATK.sorted.vcf > 1152.hets.GATK.sorted.withChr.vcf
+awk '{if($0 !~ /^#/) print "chr"$0; else print $0}' "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.vcf > "$SAMPLE_ID"/"$SAMPLE_ID".hets.GATK.sorted.withChr.vcf
 
 # At this point, the VCF, all.fasta and chain files are prefixed with 'chr' - so they are compatible.
 
