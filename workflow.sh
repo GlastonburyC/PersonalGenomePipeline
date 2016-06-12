@@ -169,3 +169,10 @@ python ../software/PersonalGenomePipeline/ASERefCord.py "$SAMPLE_ID"/maternal/"$
 #################################
 
 Rscript ../software/PersonalGenomePipeline/ASERefOut.R "$SAMPLE_ID"/maternal/"$SAMPLE_ID".maternal.ref.csv "$SAMPLE_ID"/paternal/"$SAMPLE_ID".paternal.ref.csv "$SAMPLE_ID"/"$SAMPLE_ID".ASE.csv
+
+### END OF ASE PIPELINE ###
+
+### START OF GENE-LEVEL COUNT GENERATION ###
+
+../software/liftOver -gff gencode.v19.annotation.gtf "$SAMPLE_ID"/maternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".mat.gtf "$SAMPLE_ID".not_lifted.txt -minMatch=0.00000001
+../software/liftOver -gff gencode.v19.annotation.gtf "$SAMPLE_ID"/paternal.chain "$SAMPLE_ID"/"$SAMPLE_ID".pat.gtf "$SAMPLE_ID".not_lifted.txt -minMatch=0.00000001
