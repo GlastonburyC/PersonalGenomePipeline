@@ -15,6 +15,6 @@ For each read, simply choose the read which has the least number of mismatches, 
 
 ##Output
 
-1.Personalised genome Allele specific expression file.
+1. Personalised genome Allele specific expression file.
 2. Gene level counts using the personalised genomes 
 3. Gene level counts using the universal reference genome
