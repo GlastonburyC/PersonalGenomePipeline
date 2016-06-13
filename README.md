@@ -12,3 +12,8 @@ For each read, simply choose the read which has the least number of mismatches, 
 3. Correct bug in ASEReadCounter that outputs INDEL alleles incorrectly (i.e. Should be AAG/A, But the output is A/A)
 4. Consolidate alleleCounts into REF/ALT according to universal reference vcf. 
 5. Generate gene-level count files for maternal and paternal + reference genome. Merge the mat and pat haplotypes into one consensus gene    level count file.
+
+##Output
+
+Personalised genome Allele specific expression file.
+Gene level counts using the personalised genomes and using the universal reference genome
