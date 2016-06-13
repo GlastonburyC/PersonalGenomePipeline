@@ -8,9 +8,12 @@ mv "$SAMPLE_ID"/*_"$SAMPLE_ID"_paternal.fa "$SAMPLE_ID"/paternal/
 
 # Make BAMS sorted by read name
 ../software/samtools-1.3.1/samtools sort -n "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam -o "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 # convert BAMS to fastq 
 ../software/bedtools2/bin/bedtools bamtofastq -i "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted -fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq -fq2 "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq
+
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted
 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
 ../software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o "$SAMPLE_ID" --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired "$SAMPLE_ID"/"$SAMPLE_ID".f1.fq "$SAMPLE_ID"/"$SAMPLE_ID".f2.fq
@@ -195,3 +198,6 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R "$SAMPLE_ID"/maternal/"$S
 
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R "$SAMPLE_ID" "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/"$SAMPLE_ID".GeneCount.Final.txt
 
+rm "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
+rm "$SAMPLE_ID"/paternal/"$SAMPLE_ID".filtered.bam
+rm "$SAMPLE_ID"/maternal/"$SAMPLE_ID".filtered.bam
