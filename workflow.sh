@@ -199,5 +199,5 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R "$SAMPLE_ID"/maternal/"$S
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R "$SAMPLE_ID" "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/"$SAMPLE_ID".GeneCount.Final.txt
 
 rm "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
-rm "$SAMPLE_ID"/paternal/"$SAMPLE_ID".filtered.bam
-rm "$SAMPLE_ID"/maternal/"$SAMPLE_ID".filtered.bam
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq
