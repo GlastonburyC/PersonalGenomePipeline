@@ -1,6 +1,7 @@
 # This should all be excuted from the /data/ directory.
 THREAD_NO=8
 TISSUE='adipose'
+
 java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id "$SAMPLE_ID" -chr hg19/hg19.fa -vcf "$SAMPLE_ID"/"$SAMPLE_ID".vcf.gz -outDir $SAMPLE_ID
 
 mv "$TISSUE"/"$SAMPLE_ID"/*_"$SAMPLE_ID"_maternal.fa "$TISSUE"/"$SAMPLE_ID"/maternal/
