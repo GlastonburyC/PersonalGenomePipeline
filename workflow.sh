@@ -300,11 +300,24 @@ echo '35. Adding both haplotypes together to produce final gene-level count file
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R "$SAMPLE_ID" "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/"$SAMPLE_ID".GeneCount.Final.txt
 echo '36. Finished successfully.'
 
+
+# clean up step to save space.
 rm "$SAMPLE_ID"/maternal/chr*_"$SAMPLE_ID"_maternal.fa
 rm "$SAMPLE_ID"/paternal/chr*_"$SAMPLE_ID"_paternal.fa
 
 mkdir "$SAMPLE_ID"/map_files
 mv "$SAMPLE_ID"/*.map map_files/
+
+rm "$SAMPLE_ID"/maternal/SA
+rm "$SAMPLE_ID"/maternal/SAindex
+rm "$SAMPLE_ID"/maternal/Genome
+
+rm "$SAMPLE_ID"/paternal/SA
+rm "$SAMPLE_ID"/paternal/SAindex
+rm "$SAMPLE_ID"/paternal/Genome
+
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq
+rm "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq
 
 " > $SAMPLE_ID.both.sh
 fi
