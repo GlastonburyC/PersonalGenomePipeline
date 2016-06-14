@@ -46,6 +46,7 @@ rm "$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam.sorted
 echo "5. Aligning transcriptome with STAR."
 ../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn "$SAMPLE_ID"/"$SAMPLE_ID"_1.fastq "$SAMPLE_ID"/"$SAMPLE_ID"_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:"$SAMPLE_ID"_maternal PU:Illumina PL:Illumina LB:"$SAMPLE_ID"_maternal SM:"$SAMPLE_ID"_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix "$SAMPLE_ID"_ref.
 
+rm -r "$SAMPLE_ID"_mat._STARtmp
 mv "$SAMPLE_ID"_ref.Aligned.sortedByCoord.out.bam "$SAMPLE_ID"/reference/"$SAMPLE_ID"_ref.Aligned.sortedByCoord.out.bam
 mv "$SAMPLE_ID"_ref.Chimeric.out.junction "$SAMPLE_ID"/reference/"$SAMPLE_ID"_ref.Chimeric.out.junction
 mv "$SAMPLE_ID"_ref.Chimeric.out.sam "$SAMPLE_ID"/reference/"$SAMPLE_ID"_ref.Chimeric.out.sam
@@ -141,6 +142,12 @@ rm "$SAMPLE_ID"_ref.Log.out
 rm "$SAMPLE_ID"_ref.Log.progress.out
 ########################################
 #
+
+rm -r "$SAMPLE_ID"_mat._STARtmp
+rm -r "$SAMPLE_ID"_pat._STARtmp
+rm -r "$SAMPLE_ID"_ref._STARtmp
+
+
 echo '10. Filtering alignment (QUAL > 30, properly paired).'
 ../software/samtools-1.3.1/samtools view -b -F4 -q 30 "$SAMPLE_ID"/reference/"$SAMPLE_ID"_ref.Aligned.sortedByCoord.out.bam -o "$SAMPLE_ID"/reference/"$SAMPLE_ID".filtered.bam
 
@@ -292,6 +299,13 @@ echo '34. generating Gene-level counts (Reference).'
 echo '35. Adding both haplotypes together to produce final gene-level count file'
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R "$SAMPLE_ID" "$SAMPLE_ID"/maternal/"$SAMPLE_ID".GeneCount_Mat.txt "$SAMPLE_ID"/paternal/"$SAMPLE_ID".GeneCount_Pat.txt "$SAMPLE_ID"/"$SAMPLE_ID".GeneCount.Final.txt
 echo '36. Finished successfully.'
+
+rm "$SAMPLE_ID"/maternal/chr*_"$SAMPLE_ID"_maternal.fa
+rm "$SAMPLE_ID"/paternal/chr*_"$SAMPLE_ID"_paternal.fa
+
+mkdir "$SAMPLE_ID"/map_files
+mv "$SAMPLE_ID"/*.map map_files/
+
 " > $SAMPLE_ID.both.sh
 fi
 
