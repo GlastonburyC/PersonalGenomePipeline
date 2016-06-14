@@ -1,16 +1,16 @@
-# USAGE:   sh SCRIPT.sh TEST_FILE CHECK_FILE
+# USAGE:   sh workflow.sh all.samples.txt uk10k.samples.txt 8
 # This should all be excuted from the /data/ directory.
-THREAD_NO=$3
 ALL_SAMPLES=$1
 UK10K_SAMPLES=$2
+THREAD_NO=$3
 
-## for each line in TEST_FILE
+## for each line in ALL SAMPLES
 while read line ; do
 
 #!/bin/bash 
 # 
 #SBATCH -n 8 
-## check if line exist in CHECK_FILE; then assign result to variable
+## check if line exist in uk10k file; then assign result to variable
 SAMPLE_ID=$(grep "^${line}$" ${UK10K_SAMPLES})
 
 
