@@ -3,7 +3,7 @@
 # Supply the mapping file (arg 1) and the suffix without the extension of the files you want to rename in bulk (arg 2)
 # column 1 = TwinID, column 3 = BAM ID.
 
-import os
+import os,sys
 
 # A dict with keys being the old filenames and values being the new filenames
 mapping = {}
@@ -18,7 +18,7 @@ with open(sys.argv[1]) as mapping_file:
         else:
         	mapping[line[2]] = line[0]
 
-#e.g. "_sorted.bam"
+#e.g. "_sorted"
 suffix = sys.argv[2]
 
 # List the files in the current directory
