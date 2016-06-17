@@ -8,6 +8,10 @@ VAR="'{if(\$0 !~ /^#/) print $FML\$0; else print \$0}'"
 ## for each line in TEST_FILE
 while read line ; do
 
+#!/bin/bash 
+# 
+#SBATCH -n 8 
+## check if line exist in CHECK_FILE; then assign result to variable
 SAMPLE_ID=$(grep "^${line}$" ${UK10K_SAMPLES})
 
 
@@ -18,6 +22,8 @@ if [[ -z $SAMPLE_ID ]] ; then
 echo ' #!/bin/bash 
 # 
 #SBATCH -N 1 
+#SBATCH --mail-type=END
+#SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 # number of nodes 
 #SBATCH -n 8 
 
@@ -35,7 +41,7 @@ rm '$SAMPLE_ID'/'$SAMPLE_ID'_prinseq_bad*
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
 rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
 
 mv '$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_ref.Chimeric.out.junction '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.junction
@@ -56,8 +62,10 @@ echo '#!/bin/bash
 #SBATCH -N 1 
 # number of nodes 
 #SBATCH -n 8 
+#SBATCH --mail-type=END
+#SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 
-java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id '$SAMPLE_ID' -chr hg19/hg19.fa -vcf '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz -outDir $SAMPLE_ID
+java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id '$SAMPLE_ID' -chr hg19/hg19.fa -vcf '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz -outDir '$SAMPLE_ID'
 
 mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_maternal.fa '$SAMPLE_ID'/maternal/
 mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_paternal.fa '$SAMPLE_ID'/paternal/
@@ -84,13 +92,13 @@ rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
 rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted # Ensure this is the name after replacing BAM_IDs with TwinUK IDs.
 # Maternal genome generation (suffix arrays etc)
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/maternal --genomeFastaFiles '$SAMPLE_ID'/maternal/chr*_'$SAMPLE_ID'_maternal.fa
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/maternal --genomeFastaFiles '$SAMPLE_ID'/maternal/chr*_'$SAMPLE_ID'_maternal.fa
 
 #Paternal genome generation (suffix arrays etc)
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/paternal --genomeFastaFiles '$SAMPLE_ID'/paternal/chr*_'$SAMPLE_ID'_paternal.fa
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/paternal --genomeFastaFiles '$SAMPLE_ID'/paternal/chr*_'$SAMPLE_ID'_paternal.fa
 
 #Align paternal
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_paternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_paternal SM:'$SAMPLE_ID'_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_paternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_paternal SM:'$SAMPLE_ID'_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
 mv '$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_pat.Chimeric.out.junction '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.junction
 mv '$SAMPLE_ID'_pat.Chimeric.out.sam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.sam
@@ -99,7 +107,7 @@ mv '$SAMPLE_ID'_pat.SJ.out.tab '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.SJ.out.tab
 rm '$SAMPLE_ID'_pat.Log.out
 rm '$SAMPLE_ID'_pat.Log.progress.out
 #Align maternal
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_mat.
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_mat.
 mv '$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_mat.Chimeric.out.junction '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Chimeric.out.junction
 mv '$SAMPLE_ID'_mat.Chimeric.out.sam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Chimeric.out.sam
@@ -110,7 +118,7 @@ rm '$SAMPLE_ID'_mat.Log.progress.out
 
 # Add standard reference alignment too.
 
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN $THREAD_NO --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
 
 mv '$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_ref.Chimeric.out.junction '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.junction
@@ -128,16 +136,13 @@ rm '$SAMPLE_ID'_ref.Log.progress.out
 python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py '$SAMPLE_ID'
 #
 #for all variants without an rsid - assign them chrpos.
-python ../software/PersonalGenomePipeline/nameVariants.py '$SAMPLE_ID' '$SAMPLE_ID'.hets.phased.vcf '$SAMPLE_ID'.hets.phased.vcf2
+python ../software/PersonalGenomePipeline/nameVariants.py '$SAMPLE_ID' '$SAMPLE_ID'.hets.phased.vcf.gz '$SAMPLE_ID'.hets.phased.vcf2.gz
 
-mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf2 '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
+mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf2.gz '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf.gz
 
 # Sort the VCFs else picard/GATK throws a fit.
-../software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
+../software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf.gz > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
 
-pigz --best -k '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
-
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
 
@@ -195,8 +200,8 @@ python ../software/PersonalGenomePipeline/haplotypeVCFAlleles.py '$SAMPLE_ID' '$
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf.maternal2.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf.paternal2.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R="'$SAMPLE_ID'/paternal/$SAMPLE_ID".paternal.renamed.fa O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.dict
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R="'$SAMPLE_ID'/maternal/$SAMPLE_ID".maternal.renamed.fa O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.dict
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.dict
+java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.dict
 
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
