@@ -53,7 +53,7 @@ rm '$SAMPLE_ID'_ref.Log.progress.out
 
 ../software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 ../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
-rm -r '$SAMPLE_ID'_ref._STARtmp
+
 rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
 rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam ' > $SAMPLE_ID.refOnly.sh
 else
@@ -231,8 +231,8 @@ java -jar ~/scratch/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAM
 python ../software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf '$SAMPLE_ID'.maternal.alleles.csv '$SAMPLE_ID'.paternal.alleles.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'
 #################################
 
-~/scratch/software/samtools-1.3.1/samtools sort -n 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
-~/scratch/software/samtools-1.3.1/samtools sort -n 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
+~/scratch/software/samtools-1.3.1/samtools sort 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
+~/scratch/software/samtools-1.3.1/samtools sort 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
 
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
@@ -264,12 +264,7 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$S
 ../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/'$SAMPLE_ID'.GeneCount.Final.txt
-rm -r '$SAMPLE_ID'_ref._STARtmp
-rm -r '$SAMPLE_ID'_pat._STARtmp
-rm -r '$SAMPLE_ID'_mat._STARtmp
-
 ' > $SAMPLE_ID.both.sh
 fi
 
 done < ${ALL_SAMPLES}
-
