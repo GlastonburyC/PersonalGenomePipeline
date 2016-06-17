@@ -187,8 +187,6 @@ awk '$VAR' 1152/1152.hets.GATK.sorted.vcf > 1152/1152.hets.GATK.sorted.withChr.v
 
 mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.withChr.vcf '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
 
-pigz --best -k '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
-
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
 python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.maternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 
