@@ -1,6 +1,6 @@
 #### Add a column that counts the number of reads that map to more than 1 location
 
-# quanyMultiMapping.py ASE.mat.alleles.csv ASE.pat.alleles.csv ASE.mat.alleles.multi.txt ASE.pat.alleles.multi.txt
+# quanyMultiMapping.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv ASE.mat.ref.multi.txt ASE.pat.ref.multi.txt
 import pysam,sys,os
 
 consolidated_ase=open(sys.argv[1],'r')
