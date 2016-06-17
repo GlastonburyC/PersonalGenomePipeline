@@ -45,7 +45,6 @@ for(i in 1:dim(ase_mat)[1]){
 
 }
 
-}
 
 for(i in 1:dim(ase_pat)[1]){
 
