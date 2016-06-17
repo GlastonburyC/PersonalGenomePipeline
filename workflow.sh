@@ -231,7 +231,10 @@ java -jar ~/scratch/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAM
 python ../software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf '$SAMPLE_ID'.maternal.alleles.csv '$SAMPLE_ID'.paternal.alleles.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv
 #################################
 
-Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'/'$SAMPLE_ID'.ASE.csv
+# Add total number of reads covering heterozgyous SNPs + degree of multi-mapping reads.
+python ../software/PersonalGenomePipeline/quantMultiMapping.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt
+
+Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'/'$SAMPLE_ID'.ASE.csv
 
 ### END OF ASE PIPELINE ###
 
