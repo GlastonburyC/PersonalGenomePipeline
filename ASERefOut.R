@@ -7,6 +7,12 @@ file2=args[2]
 ase_mat = read.table(file1,head=T,stringsAsFactors=F)
 ase_pat = read.table(file2,head=T,stringsAsFactors=F)
 
+ase_mat$MultiPaternal=rep(NA)
+ase_pat$MultiMaternal=rep(NA)
+
+ase_mat$Paternal_totalReads=rep(NA)
+ase_pat$Maternal_totalReads=rep(NA)
+
 file_out= args[3]
 
 merged_ase=data.frame()
@@ -32,9 +38,12 @@ for(i in 1:dim(ase_mat)[1]){
 			       refAllele=ase_mat$refAllele[i],altAllele=ase_mat$altAllele[i],refCount=c_refCount,
 			       altCount=c_altCount,totalCount=c_totalCount,lowMAPQDepth=c_lowMAPQDepth,
 			       lowBaseQDepth=c_lowBaseQDepth,rawDepth=c_rawDepth,otherBases=c_otherBases,
-			       improperPairs=c_improperPairs)
+			       improperPairs=c_improperPairs,MultiMaternal=ase_mat$MultiMaternal[i],MultiPaternal=ase_pat$MultiPaternal[index],
+			       Maternal_totalReads=ase_mat$Maternal_totalReads[i],Paternal_totalReads=ase_pat$Paternal_totalReads[index])
 		merged_ase      = rbind(merged_ase,mod)
 	}
+
+}
 
 }
 
