@@ -18,7 +18,7 @@ SAMPLE_ID=$(grep "^${line}$" ${UK10K_SAMPLES})
 ## if variable is blank (meaning ALL_SAMPLES line not found in UK10K)
 ## print 'false' and exit
 if [[ -z $SAMPLE_ID ]] ; then
- 
+
 echo ' #!/bin/bash 
 # 
 #SBATCH -N 1 
@@ -27,35 +27,36 @@ echo ' #!/bin/bash
 # number of nodes 
 #SBATCH -n 8 
 
-../software/samtools-1.3.1/samtools sort -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
-../software/bedtools2/bin/bedtools bamtofastq -i '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted -fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq -fq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
-../software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$SAMPLE_ID' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
-perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq -fastq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq -out_good '$SAMPLE_ID'/'$SAMPLE_ID' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq_trimming_report.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq_trimming_report.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_1_singletons.fastq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_2_singletons.fastq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_prinseq_bad*
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
+../software/samtools-1.3.1/samtools sort -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
+../software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
+../software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$line' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$line'/'$line'.f1.fq '$line'/'$line'.f2.fq
+perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$line'/'$line'.f1_val_1.fq -fastq2 '$line'/'$line'.f2_val_2.fq -out_good '$line'/'$line' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
+rm '$line'/'$line'.f2_val_2.fq
+rm '$line'/'$line'.f1_val_1.fq
+rm '$line'/'$line'.f2.fq_trimming_report.txt
+rm '$line'/'$line'.f1.fq_trimming_report.txt
+rm '$line'/'$line'_1_singletons.fastq
+rm '$line'/'$line'_2_singletons.fastq
+rm '$line'/'$line'_prinseq_bad*
+rm '$line'/'$line'.f1.fq
+rm '$line'/'$line'.f2.fq
+rm '$line'/'$line'_sorted.bam.sorted
+../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$line'/'$line'_1.fastq '$line'/'$line'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$line'_maternal PU:Illumina PL:Illumina LB:'$line'_maternal SM:'$line'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$line'_ref.
 
-mv '$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam
-mv '$SAMPLE_ID'_ref.Chimeric.out.junction '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.junction
-mv '$SAMPLE_ID'_ref.Chimeric.out.sam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.sam
-mv '$SAMPLE_ID'_ref.Log.final.out '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Log.final.out
-mv '$SAMPLE_ID'_ref.SJ.out.tab '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.SJ.out.tab
-rm '$SAMPLE_ID'_ref.Log.out
-rm '$SAMPLE_ID'_ref.Log.progress.out
+mv '$line'_ref.Aligned.sortedByCoord.out.bam '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam
+mv '$line'_ref.Chimeric.out.junction '$line'/reference/'$line'_ref.Chimeric.out.junction
+mv '$line'_ref.Chimeric.out.sam '$line'/reference/'$line'_ref.Chimeric.out.sam
+mv '$line'_ref.Log.final.out '$line'/reference/'$line'_ref.Log.final.out
+mv '$line'_ref.SJ.out.tab '$line'/reference/'$line'_ref.SJ.out.tab
+rm '$line'_ref.Log.out
+rm '$line'_ref.Log.progress.out
 
-../software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+../software/samtools-1.3.1/samtools view -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
+../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
 
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
-rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam ' > $SAMPLE_ID.refOnly.sh
+rm '$line'/'$line'_sorted.bam.sorted
+rm '$line'/'$line'_sorted.bam ' > $line.refOnly.sh
+
 else
 echo '#!/bin/bash 
 # 
@@ -269,7 +270,7 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$S
 ../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/'$SAMPLE_ID'.GeneCount.Final.txt
-' > $SAMPLE_ID.both.sh
+' > $line.both.sh
 fi
 
 done < ${ALL_SAMPLES}
