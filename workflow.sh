@@ -67,7 +67,7 @@ echo '#!/bin/bash
 #SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 
 # Only edit the genome using variants with a GQ score > 30.
-../software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
+python ../software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'
 
 mv '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz2 '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
 

@@ -1,3 +1,5 @@
+import sys,vcf
+
 ID=str(sys.argv[1])
 
 vcf_reader = vcf.Reader(open(sys.argv[1]+'/'+sys.argv[1]+'.vcf.gz','r'))
