@@ -19,7 +19,7 @@ SAMPLE_ID=$(grep "^${line}$" ${UK10K_SAMPLES})
 ## print 'false' and exit
 if [[ -z $SAMPLE_ID ]] ; then
 
-echo ' #!/bin/bash 
+echo '#!/bin/bash 
 # 
 #SBATCH -N 1 
 #SBATCH --mail-type=END
