@@ -1,16 +1,13 @@
-# USAGE:   sh SCRIPT.sh TEST_FILE CHECK_FILE
+# USAGE:   sh SCRIPT.sh ALL_SAMPLEs.txt UK10K_SAMPLES.txt
 # This should all be excuted from the /data/ directory.
 THREAD_NO=$3
 ALL_SAMPLES=$1
 UK10K_SAMPLES=$2
 FML='"chr"'
 VAR="'{if(\$0 !~ /^#/) print $FML\$0; else print \$0}'"
-## for each line in TEST_FILE
+
 while read line ; do
 
-#!/bin/bash 
-# 
-#SBATCH -n 8 
 ## check if line exist in CHECK_FILE; then assign result to variable
 SAMPLE_ID=$(grep "^${line}$" ${UK10K_SAMPLES})
 
@@ -55,7 +52,12 @@ rm '$line'_ref.Log.progress.out
 ../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
 
 rm '$line'/'$line'_sorted.bam.sorted
-rm '$line'/'$line'_sorted.bam ' > $line.refOnly.sh
+rm '$line'/'$line'_sorted.bam 
+rm -r '$line'_ref._STARtmp
+rm '$line'/'$line'_1.fastq
+rm '$line'/'$line'_2.fastq
+
+rm '$line'/reference/'$line'.filtered.bam' > $line.refOnly.sh
 
 else
 echo '#!/bin/bash 
@@ -67,9 +69,14 @@ echo '#!/bin/bash
 #SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 
 # Only edit the genome using variants with a GQ score > 30.
+
 python ../software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'
 
-mv '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz2 '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
+mv '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz2 '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
+
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
+
+pigz --best -k '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
 
 java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id '$SAMPLE_ID' -chr hg19/hg19.fa -vcf '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz -outDir '$SAMPLE_ID'
 
@@ -270,7 +277,32 @@ Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$S
 ../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/'$SAMPLE_ID'.GeneCount.Final.txt
-' > $line.both.sh
-fi
 
+rm -r '$SAMPLE_ID'_pat._STARtmp
+rm -r '$SAMPLE_ID'_ref._STARtmp
+rm -r '$SAMPLE_ID'_mat._STARtmp
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrLength.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrNameLength.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrStart.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/Genome 
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/genomeParameters.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/SA
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/SAindex                  
+
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrLength.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrNameLength.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrStart.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/Genome
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/genomeParameters.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/SA                  
+rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/SAindex
+
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf
+rm '$SAMPLE_ID'.not_lifted.txt ' > $line.both.sh
+fi
 done < ${ALL_SAMPLES}
