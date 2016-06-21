@@ -151,10 +151,10 @@ python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py '$SAMPLE_ID'
 #for all variants without an rsid - assign them chrpos.
 python ../software/PersonalGenomePipeline/nameVariants.py '$SAMPLE_ID' '$SAMPLE_ID'.hets.phased.vcf.gz '$SAMPLE_ID'.hets.phased.vcf2.gz
 
-mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf2.gz '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf.gz
+mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf2.gz '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
 
 # Sort the VCFs else picard/GATK throws a fit.
-../software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf.gz > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
+../software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
 
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
@@ -191,7 +191,7 @@ cat '$SAMPLE_ID'/maternal/chrM_'$SAMPLE_ID'_maternal.fa >> '$SAMPLE_ID'/maternal
 # rename maternal and paternal fasta files with correct scaffold/chr name.
 python ../software/PersonalGenomePipeline/renameFaChr.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.all_maternal.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.all_paternal.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
 
-pigz -d '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
+#pigz -d '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
 
 # Modify vcf so all chromosomes are prefixed with 'chr'
 awk '$VAR' 1152/1152.hets.GATK.sorted.vcf > 1152/1152.hets.GATK.sorted.withChr.vcf
