@@ -332,25 +332,25 @@ Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPL
 rm -r '$SAMPLE_ID'_pat._STARtmp
 rm -r '$SAMPLE_ID'_ref._STARtmp
 rm -r '$SAMPLE_ID'_mat._STARtmp
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrLength.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrNameLength.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/chrStart.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/Genome 
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/genomeParameters.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/SA
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/maternal/SAindex                  
+rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
+rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
+rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
+rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa
+rm '$SAMPLE_ID'/maternal/chrLength.txt
+rm '$SAMPLE_ID'/maternal/chrNameLength.txt
+rm '$SAMPLE_ID'/maternal/chrStart.txt
+rm '$SAMPLE_ID'/maternal/Genome 
+rm '$SAMPLE_ID'/maternal/genomeParameters.txt
+rm '$SAMPLE_ID'/maternal/SA
+rm '$SAMPLE_ID'/maternal/SAindex                  
 
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrLength.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrNameLength.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/chrStart.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/Genome
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/genomeParameters.txt
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/SA                  
-rm '$SAMPLE_ID'/'$SAMPLE_ID'/paternal/SAindex
+rm '$SAMPLE_ID'/paternal/chrLength.txt
+rm '$SAMPLE_ID'/paternal/chrNameLength.txt
+rm '$SAMPLE_ID'/paternal/chrStart.txt
+rm '$SAMPLE_ID'/paternal/Genome
+rm '$SAMPLE_ID'/paternal/genomeParameters.txt
+rm '$SAMPLE_ID'/paternal/SA                  
+rm '$SAMPLE_ID'/paternal/SAindex
 
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf
