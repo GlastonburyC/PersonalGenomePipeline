@@ -29,7 +29,7 @@ echo "Step 1. Sorting BAM file"
 echo "Step 2. BAM >> fastq"
 /media/shared_data/software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
 echo "Step 3. Trimming Adaptor seqs"
-/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$line' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$line'/'$line'.f1.fq '$line'/'$line'.f2.fq
+/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$line' --paired '$line'/'$line'.f1.fq '$line'/'$line'.f2.fq
 echo "Step 4. Trimming polyA+ seqs"
 perl /media/shared_data/software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$line'/'$line'.f1_val_1.fq -fastq2 '$line'/'$line'.f2_val_2.fq -out_good '$line'/'$line' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 rm '$line'/'$line'.f2_val_2.fq
