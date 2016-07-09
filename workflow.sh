@@ -25,13 +25,13 @@ echo '#!/bin/bash
 #SBATCH -n 8 
 
 echo "Step 1. Sorting BAM file"
-../software/samtools-1.3.1/samtools sort -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
 echo "Step 2. BAM >> fastq"
-../software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
+/media/shared_data/software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
 echo "Step 3. Trimming Adaptor seqs"
-../software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$line' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$line'/'$line'.f1.fq '$line'/'$line'.f2.fq
+/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$line' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$line'/'$line'.f1.fq '$line'/'$line'.f2.fq
 echo "Step 4. Trimming polyA+ seqs"
-perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$line'/'$line'.f1_val_1.fq -fastq2 '$line'/'$line'.f2_val_2.fq -out_good '$line'/'$line' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
+perl /media/shared_data/software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$line'/'$line'.f1_val_1.fq -fastq2 '$line'/'$line'.f2_val_2.fq -out_good '$line'/'$line' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 rm '$line'/'$line'.f2_val_2.fq
 rm '$line'/'$line'.f1_val_1.fq
 rm '$line'/'$line'.f2.fq_trimming_report.txt
@@ -43,7 +43,7 @@ rm '$line'/'$line'.f1.fq
 rm '$line'/'$line'.f2.fq
 rm '$line'/'$line'_sorted.bam.sorted
 echo "Step 5. Genome Alignment (STAR)"
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$line'/'$line'_1.fastq '$line'/'$line'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$line'_maternal PU:Illumina PL:Illumina LB:'$line'_maternal SM:'$line'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$line'_ref.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$line'/'$line'_1.fastq '$line'/'$line'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$line'_maternal PU:Illumina PL:Illumina LB:'$line'_maternal SM:'$line'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$line'_ref.
 
 mv '$line'_ref.Aligned.sortedByCoord.out.bam '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam
 mv '$line'_ref.Chimeric.out.junction '$line'/reference/'$line'_ref.Chimeric.out.junction
@@ -54,10 +54,10 @@ rm '$line'_ref.Log.out
 rm '$line'_ref.Log.progress.out
 
 echo "Step 6. Filtering aligned BAM"
-../software/samtools-1.3.1/samtools view -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
 
 echo "Step 7. Calculating gene counts"
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
+/media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
 
 rm '$line'/'$line'_sorted.bam.sorted
 rm '$line'/'$line'_sorted.bam 
@@ -79,7 +79,7 @@ echo '#!/bin/bash
 # Only edit the genome using variants with a GQ score > 30.
 
 echo "Step 1. Filtering VCF for GQ < 30"
-python ../software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'
+python /media/shared_data/software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'
 
 mv '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz2 '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
 
@@ -88,7 +88,7 @@ rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
 pigz --best -k '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
 
 echo "Step 2. Personalising genomes with vcf2diploid"
-java -jar ../software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id '$SAMPLE_ID' -chr hg19/hg19.fa -vcf '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz -outDir '$SAMPLE_ID'
+java -jar /media/shared_data/software/vcf2diploid_v0.2.6a/vcf2diploid.jar -id '$SAMPLE_ID' -chr hg19/hg19.fa -vcf '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz -outDir '$SAMPLE_ID'
 
 mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_maternal.fa '$SAMPLE_ID'/maternal/
 mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_paternal.fa '$SAMPLE_ID'/paternal/
@@ -96,18 +96,18 @@ mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_paternal.fa '$SAMPLE_ID'/paternal/
 # Make BAMS sorted by read name
 
 echo "Step 3. Sorting BAM by read name"
-../software/samtools-1.3.1/samtools sort -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
 
 # convert BAMS to fastq 
 echo "Step 4. BAM >> fastq"
-../software/bedtools2/bin/bedtools bamtofastq -i '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted -fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq -fq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
+/media/shared_data/software/bedtools2/bin/bedtools bamtofastq -i '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted -fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq -fq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq
 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
 echo "Step 5. Trimming adaptor seqs"
-../software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$SAMPLE_ID' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
+/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$SAMPLE_ID' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
 
 echo "Step 6. Trimming PolyA+ seqs"
-perl ../software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq -fastq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq -out_good '$SAMPLE_ID'/'$SAMPLE_ID' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
+perl /media/shared_data/software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq -fastq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq -out_good '$SAMPLE_ID'/'$SAMPLE_ID' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
 
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq
@@ -122,15 +122,15 @@ rm '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted # Ensure this is the name after r
 # Maternal genome generation (suffix arrays etc)
 
 echo "Step 7. Generating Maternal genome Suffix Array (STAR)"
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/maternal --genomeFastaFiles '$SAMPLE_ID'/maternal/chr*_'$SAMPLE_ID'_maternal.fa
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/maternal --genomeFastaFiles '$SAMPLE_ID'/maternal/chr*_'$SAMPLE_ID'_maternal.fa
 
 #Paternal genome generation (suffix arrays etc)
 echo "Step 8. Generating Paternal genome Suffix Array (STAR)"
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/paternal --genomeFastaFiles '$SAMPLE_ID'/paternal/chr*_'$SAMPLE_ID'_paternal.fa
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode genomeGenerate --genomeDir '$SAMPLE_ID'/paternal --genomeFastaFiles '$SAMPLE_ID'/paternal/chr*_'$SAMPLE_ID'_paternal.fa
 
 #Align paternal
 echo "Step 9. Aligning to Paternal genome (STAR)"
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_paternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_paternal SM:'$SAMPLE_ID'_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_paternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_paternal SM:'$SAMPLE_ID'_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
 mv '$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_pat.Chimeric.out.junction '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.junction
 mv '$SAMPLE_ID'_pat.Chimeric.out.sam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.sam
@@ -141,7 +141,7 @@ rm '$SAMPLE_ID'_pat.Log.progress.out
 
 echo "Step 10. Aligning to Maternal genome (STAR)"
 
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_mat.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/maternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_mat.
 mv '$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_mat.Chimeric.out.junction '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Chimeric.out.junction
 mv '$SAMPLE_ID'_mat.Chimeric.out.sam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Chimeric.out.sam
@@ -154,7 +154,7 @@ rm '$SAMPLE_ID'_mat.Log.progress.out
 
 echo "Step 11. Aligning to Universal Reference genome (STAR)"
 
-../software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
 
 mv '$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_ref.Chimeric.out.junction '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.junction
@@ -167,22 +167,22 @@ rm '$SAMPLE_ID'_ref.Log.progress.out
 #
 
 echo "Step 12. Filtering BAM file"
-../software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 ## Produce consensus bams, in which the best read per haplotype is selected.
 
 echo "Step 13. Selecting best read alignment per haplotype (seperateBAMS.py)"
-python ../software/PersonalGenomePipeline/pipeline.seperateBAMs.py '$SAMPLE_ID'
+python /media/shared_data/software/PersonalGenomePipeline/pipeline.seperateBAMs.py '$SAMPLE_ID'
 #
 #for all variants without an rsid - assign them chrpos.
 echo "Step 14. Assigning variants with no rsid to: chr-pos"
-python ../software/PersonalGenomePipeline/nameVariants.py '$SAMPLE_ID' '$SAMPLE_ID'.hets.phased.vcf.gz '$SAMPLE_ID'.hets.phased.vcf2.gz
+python /media/shared_data/software/PersonalGenomePipeline/nameVariants.py '$SAMPLE_ID' '$SAMPLE_ID'.hets.phased.vcf.gz '$SAMPLE_ID'.hets.phased.vcf2.gz
 
 mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf2.gz '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
 
 # Sort the VCFs else picard/GATK throws a fit.
 echo "Step 15. Sorting VCF by chromosome"
-../software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
+/media/shared_data/software/vcftools/src/perl/vcf-sort -c '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf
 
 #########################################
 # run BASH script to concatenate reference genomes, and rename chain 1_maternal > 1
@@ -219,7 +219,7 @@ cat '$SAMPLE_ID'/maternal/chrM_'$SAMPLE_ID'_maternal.fa >> '$SAMPLE_ID'/maternal
 
 # rename maternal and paternal fasta files with correct scaffold/chr name.
 
-python ../software/PersonalGenomePipeline/renameFaChr.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.all_maternal.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.all_paternal.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
+python /media/shared_data/software/PersonalGenomePipeline/renameFaChr.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.all_maternal.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.all_paternal.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
 
 #pigz -d '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
 
@@ -233,49 +233,49 @@ mv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.withChr.vcf '$SAMPLE_ID'/'$SAMPLE_
 # Remap VCF to parental genome coordinates using modified CrossMap (fixedBugs)
 
 echo "Step 17. Converting VCF to Maternal coordinate system for downstream ASE"
-python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.maternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
+python /media/shared_data/software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.maternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 
 echo "Step 18. Converting VCF to Paternal coordinate system for downstream ASE"
-python ../software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.paternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
+python /media/shared_data/software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.paternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether its the maternal or paternal haplotype.
 echo "Step 19. Swapping Alleles to reflect reference according to haplotype"
-python ../software/PersonalGenomePipeline/haplotypeVCFAlleles.py '$SAMPLE_ID' '$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'.paternal.vcf
+python /media/shared_data/software/PersonalGenomePipeline/haplotypeVCFAlleles.py '$SAMPLE_ID' '$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'.paternal.vcf
 #
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf.maternal2.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf.paternal2.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
 echo "Step 20. Creating SequenceDict (picard)"
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.dict
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.dict
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.dict
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.dict
 
 echo "Step 21. Adding ReadGroups (picard)"
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 
 # both say maternal for chromosome because maternal was used as a template BAM when selecting best reads.
-~/scratch/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
 
-~/scratch/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 
 echo "Step 22. Ordering SAM files"
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
-java -jar /home/centos/scratch/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
 
 echo "Step 23. Indexing SAM files"
-~/scratch/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
-~/scratch/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
+/media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
+/media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 
 echo "Step 24. Performing ASEReadCounter - Maternal"
-java -jar ~/scratch/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa -T ASEReadCounter -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv -I '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam -sites '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa -T ASEReadCounter -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv -I '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam -sites '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 
 echo "Step 25. Performing ASEReadCounter - Paternal"
-java -jar ~/scratch/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa -T ASEReadCounter -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv -I '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam -sites '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa -T ASEReadCounter -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv -I '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam -sites '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 
    #Currently, the ASE output is relative to the haplotype reference used (Maternal reference or paternal reference) 
    #i.e. REF in ASE.mat.csv = maternal allele etc.To assess REF Bias (which we should not expect due to using Personal genomes), 
@@ -283,34 +283,34 @@ java -jar ~/scratch/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAM
    #for each haplotype, consolidated into a single ASE file per individual.
 
 echo "Step 26. Converting Maternal and Paternal coordinates onto reference-base"
-python ../software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf '$SAMPLE_ID'.maternal.alleles.csv '$SAMPLE_ID'.paternal.alleles.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'
+python /media/shared_data/software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf '$SAMPLE_ID'.maternal.alleles.csv '$SAMPLE_ID'.paternal.alleles.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'
 #################################
 
 echo "Step 27. Sorting BAMs by position"
-~/scratch/software/samtools-1.3.1/samtools sort 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
-~/scratch/software/samtools-1.3.1/samtools sort 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
 
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 
 echo "Step 28. Indexing BAMs "
-~/scratch/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
-~/scratch/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
+/media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
+/media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 
 # Add total number of reads covering heterozgyous SNPs + degree of multi-mapping reads.
 echo "Step 29. Quantifying total read overlapping het sites + degree of haplotype specific multi-mapping"
-python ../software/PersonalGenomePipeline/quantMultiMapping.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'
+python /media/shared_data/software/PersonalGenomePipeline/quantMultiMapping.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'
 
 echo "Step 30. Producing file ASE output"
-Rscript ../software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'/'$SAMPLE_ID'.ASE.csv
+Rscript /media/shared_data/software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'/'$SAMPLE_ID'.ASE.csv
 
 ### END OF ASE PIPELINE ###
 
 ### START OF GENE-LEVEL COUNT GENERATION ###
 echo "Step 31. Lifting over GENCODEv19 GTF to Maternal coordinates"
-../software/liftOver -gff gencode.v19.annotation.gtf '$SAMPLE_ID'/maternal.chain '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf '$SAMPLE_ID'.not_lifted.txt -minMatch=0.00000001
+/media/shared_data/software/liftOver -gff gencode.v19.annotation.gtf '$SAMPLE_ID'/maternal.chain '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf '$SAMPLE_ID'.not_lifted.txt -minMatch=0.00000001
 echo "Step 32. Lifting over GENCODEv19 GTF to Paternal coordinates"
-../software/liftOver -gff gencode.v19.annotation.gtf '$SAMPLE_ID'/paternal.chain '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf '$SAMPLE_ID'.not_lifted.txt -minMatch=0.00000001
+/media/shared_data/software/liftOver -gff gencode.v19.annotation.gtf '$SAMPLE_ID'/paternal.chain '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf '$SAMPLE_ID'.not_lifted.txt -minMatch=0.00000001
 
 # remove _parental string from the chromosome column in the liftedOver GTFs so it matches with the BAM files.
  sed -i "s/_maternal//g" '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf
@@ -320,14 +320,14 @@ echo "Step 32. Lifting over GENCODEv19 GTF to Paternal coordinates"
 
 # Haplotypic feature count (gene level counts)
 echo "Step 33. Calculating Gene level counts - Maternal"
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
+/media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
 echo "Step 34. Calculating Gene level counts - Paternal"
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
+/media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 echo "Step 35. Calculating Gene level counts - Universal Reference"
-../software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+/media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.GeneCount_Ref.txt '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 echo "Step 36. Combining Maternal and Paternal gene-level counts"
-Rscript ../software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/'$SAMPLE_ID'.GeneCount.Final.txt
+Rscript /media/shared_data/software/PersonalGenomePipeline/AddHaploCounts.R '$SAMPLE_ID' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.GeneCount_Mat.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.GeneCount_Pat.txt '$SAMPLE_ID'/'$SAMPLE_ID'.GeneCount.Final.txt
 
 rm -r '$SAMPLE_ID'_pat._STARtmp
 rm -r '$SAMPLE_ID'_ref._STARtmp
