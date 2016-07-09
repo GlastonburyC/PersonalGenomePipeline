@@ -13,16 +13,16 @@ while read line ; do
 
 SAMPLE_ID=$line
 
-if [ ! -d /home/centos/scratch/data/adipose_samples/"$SAMPLE_ID" ]; then
+if [ ! -d /home/ubuntu/media/data/adipose_samples/"$SAMPLE_ID" ]; then
 
-	mkdir /home/centos/scratch/data/adipose_samples/"$SAMPLE_ID"
-	mkdir /home/centos/scratch/data/adipose_samples/"$SAMPLE_ID"/reference
+	mkdir /home/ubuntu/media/data/adipose_samples/"$SAMPLE_ID"
+	mkdir /home/ubuntu/media/data/adipose_samples/"$SAMPLE_ID"/reference
 
-	mv /home/centos/scratch/data/FAT/"$SAMPLE_ID"_sorted.bam /home/centos/scratch/data/adipose_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+	mv /home/ubuntu/media/data/FAT/"$SAMPLE_ID"_sorted.bam /home/ubuntu/media/data/adipose_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 else
 
-mv /home/centos/scratch/data/FAT/"$SAMPLE_ID"_sorted.bam /home/centos/scratch/data/adipose_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+mv /home/ubuntu/media/data/FAT/"$SAMPLE_ID"_sorted.bam /home/ubuntu/media/data/adipose_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 fi
 
