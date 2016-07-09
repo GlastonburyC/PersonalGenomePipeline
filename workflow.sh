@@ -165,6 +165,22 @@ rm '$SAMPLE_ID'_ref.Log.out
 rm '$SAMPLE_ID'_ref.Log.progress.out
 ########################################
 #
+rm '$SAMPLE_ID'/maternal/chrLength.txt
+rm '$SAMPLE_ID'/maternal/chrNameLength.txt
+rm '$SAMPLE_ID'/maternal/chrStart.txt
+rm '$SAMPLE_ID'/maternal/Genome 
+rm '$SAMPLE_ID'/maternal/genomeParameters.txt
+rm '$SAMPLE_ID'/maternal/SA
+rm '$SAMPLE_ID'/maternal/SAindex                  
+
+rm '$SAMPLE_ID'/paternal/chrLength.txt
+rm '$SAMPLE_ID'/paternal/chrNameLength.txt
+rm '$SAMPLE_ID'/paternal/chrStart.txt
+rm '$SAMPLE_ID'/paternal/Genome
+rm '$SAMPLE_ID'/paternal/genomeParameters.txt
+rm '$SAMPLE_ID'/paternal/SA                  
+rm '$SAMPLE_ID'/paternal/SAindex
+
 
 echo "Step 12. Filtering BAM file"
 /media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
@@ -336,21 +352,7 @@ rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.ba
 rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa
 rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa
-rm '$SAMPLE_ID'/maternal/chrLength.txt
-rm '$SAMPLE_ID'/maternal/chrNameLength.txt
-rm '$SAMPLE_ID'/maternal/chrStart.txt
-rm '$SAMPLE_ID'/maternal/Genome 
-rm '$SAMPLE_ID'/maternal/genomeParameters.txt
-rm '$SAMPLE_ID'/maternal/SA
-rm '$SAMPLE_ID'/maternal/SAindex                  
 
-rm '$SAMPLE_ID'/paternal/chrLength.txt
-rm '$SAMPLE_ID'/paternal/chrNameLength.txt
-rm '$SAMPLE_ID'/paternal/chrStart.txt
-rm '$SAMPLE_ID'/paternal/Genome
-rm '$SAMPLE_ID'/paternal/genomeParameters.txt
-rm '$SAMPLE_ID'/paternal/SA                  
-rm '$SAMPLE_ID'/paternal/SAindex
 
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf
