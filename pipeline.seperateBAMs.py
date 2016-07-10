@@ -271,12 +271,12 @@ vcf_writer.close()
 
 # filter the BAM file
 
-os.system('/home/ubuntu/media/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
-os.system('/home/ubuntu/media/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
 
 
-os.system('/home/ubuntu/media/software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.sorted.bam')
-os.system('/home/ubuntu/media/software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.sorted.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.sorted.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools sort '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.sorted.bam')
 
 os.system('rm '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
 os.system('rm '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
