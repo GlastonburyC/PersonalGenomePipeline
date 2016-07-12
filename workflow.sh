@@ -54,7 +54,7 @@ rm '$line'_ref.Log.out
 rm '$line'_ref.Log.progress.out
 
 echo "Step 6. Filtering aligned BAM"
-/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
 
 echo "Step 7. Calculating gene counts"
 /media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T 8 -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
@@ -183,7 +183,7 @@ rm '$SAMPLE_ID'/paternal/SAindex
 
 
 echo "Step 12. Filtering BAM file"
-/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 ## Produce consensus bams, in which the best read per haplotype is selected.
 
@@ -270,10 +270,10 @@ java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar AddOrReplace
 java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  RGID=4 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=20
 
 # both say maternal for chromosome because maternal was used as a template BAM when selecting best reads.
-/media/shared_data/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -h '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
 
-/media/shared_data/software/samtools-1.3.1/samtools view -h '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -h '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam  | sed -e 's/_maternal//g' >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 
 echo "Step 22. Ordering SAM files"
