@@ -104,7 +104,7 @@ echo "Step 4. BAM >> fastq"
 
 # Add check to see whether both ref and personal alignments should be done, or just one (i.e. individuals not in UK10K)
 echo "Step 5. Trimming adaptor seqs"
-/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$SAMPLE_ID' --phred33 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --paired '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
+/media/shared_data/software/trim_galore_zip/trim_galore -stringency 5 -q 1 -o '$SAMPLE_ID' --paired '$SAMPLE_ID'/'$SAMPLE_ID'.f1.fq '$SAMPLE_ID'/'$SAMPLE_ID'.f2.fq
 
 echo "Step 6. Trimming PolyA+ seqs"
 perl /media/shared_data/software/prinseq-lite-0.20.4/prinseq-lite.pl -fastq '$SAMPLE_ID'/'$SAMPLE_ID'.f1_val_1.fq -fastq2 '$SAMPLE_ID'/'$SAMPLE_ID'.f2_val_2.fq -out_good '$SAMPLE_ID'/'$SAMPLE_ID' -trim_tail_left 5 -trim_tail_right 5 -min_len 20
