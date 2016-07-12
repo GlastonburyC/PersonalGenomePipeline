@@ -271,8 +271,8 @@ vcf_writer.close()
 
 # filter the BAM file
 
-os.system('/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
-os.system('/media/shared_data/software/samtools-1.3.1/samtools view -b -F4 -q 30 '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -F4 -q 30 '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam -o '+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.filtered.bam')
+os.system('/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -F4 -q 30 '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam')
 
 
 os.system('/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.bam -o '+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.filtered.sorted.bam')
