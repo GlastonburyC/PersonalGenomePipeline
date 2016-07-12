@@ -22,7 +22,7 @@ echo '#!/bin/bash
 #SBATCH --mail-type=END
 #SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 # number of nodes 
-#SBATCH -n 8 
+#SBATCH -n '$THREAD_NO' 
 
 echo "Step 1. Sorting BAM file"
 /media/shared_data/software/samtools-1.3.1/samtools sort -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
@@ -72,7 +72,7 @@ echo '#!/bin/bash
 # 
 #SBATCH -N 1 
 # number of nodes 
-#SBATCH -n 8 
+#SBATCH -n '$THREAD_NO' 
 #SBATCH --mail-type=END
 #SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 
