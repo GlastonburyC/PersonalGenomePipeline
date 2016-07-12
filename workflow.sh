@@ -25,7 +25,7 @@ echo '#!/bin/bash
 #SBATCH -n '$THREAD_NO' 
 
 echo "Step 1. Sorting BAM file"
-/media/shared_data/software/samtools-1.3.1/samtools sort -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
+media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
 echo "Step 2. BAM >> fastq"
 /media/shared_data/software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
 echo "Step 3. Trimming Adaptor seqs"
@@ -96,7 +96,7 @@ mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_paternal.fa '$SAMPLE_ID'/paternal/
 # Make BAMS sorted by read name
 
 echo "Step 3. Sorting BAM by read name"
-/media/shared_data/software/samtools-1.3.1/samtools sort -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
+media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
 
 # convert BAMS to fastq 
 echo "Step 4. BAM >> fastq"
@@ -240,7 +240,7 @@ python /media/shared_data/software/PersonalGenomePipeline/renameFaChr.py '$SAMPL
 #pigz -d '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf.gz
 
 # Modify vcf so all chromosomes are prefixed with 'chr'
-awk '$VAR' 1152/1152.hets.GATK.sorted.vcf > 1152/1152.hets.GATK.sorted.withChr.vcf
+awk '$VAR' '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf > '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.withChr.vcf
 
 # At this point, the VCF, all.fasta and chain files are prefixed with 'chr' - so they are compatible.
 
@@ -303,8 +303,8 @@ python /media/shared_data/software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE
 #################################
 
 echo "Step 27. Sorting BAMs by position"
-/media/shared_data/software/samtools-1.3.1/samtools sort 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
-/media/shared_data/software/samtools-1.3.1/samtools sort 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
+media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
+media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
 
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
