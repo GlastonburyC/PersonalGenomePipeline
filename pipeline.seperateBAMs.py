@@ -174,8 +174,8 @@ def compareAndWrite(matr,patr,best_mat,best_pat):
 maternal_map=MapParser(PARENT='M')
 paternal_map=MapParser(PARENT='P')
 
-os.system("/home/ubuntu/media/software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.sorted")
-os.system("/home/ubuntu/media/software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.sorted")
+os.system("/media/shared_data/software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.sorted")
+os.system("/media/shared_data/software/samtools-1.3.1/samtools sort -n "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam -o "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.sorted")
 os.system("mv "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.sorted "+sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam")
 os.system("mv "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.sorted "+sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam")
 
