@@ -25,7 +25,7 @@ echo '#!/bin/bash
 #SBATCH -n '$THREAD_NO' 
 
 echo "Step 1. Sorting BAM file"
-media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
 echo "Step 2. BAM >> fastq"
 /media/shared_data/software/bedtools2/bin/bedtools bamtofastq -i '$line'/'$line'_sorted.bam.sorted -fq '$line'/'$line'.f2.fq -fq2 '$line'/'$line'.f1.fq
 echo "Step 3. Trimming Adaptor seqs"
@@ -96,7 +96,7 @@ mv '$SAMPLE_ID'/*_'$SAMPLE_ID'_paternal.fa '$SAMPLE_ID'/paternal/
 # Make BAMS sorted by read name
 
 echo "Step 3. Sorting BAM by read name"
-media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam -o '$SAMPLE_ID'/'$SAMPLE_ID'_sorted.bam.sorted
 
 # convert BAMS to fastq 
 echo "Step 4. BAM >> fastq"
