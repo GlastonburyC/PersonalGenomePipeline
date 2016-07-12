@@ -130,7 +130,7 @@ echo "Step 8. Generating Paternal genome Suffix Array (STAR)"
 
 #Align paternal
 echo "Step 9. Aligning to Paternal genome (STAR)"
-/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_paternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_paternal SM:'$SAMPLE_ID'_paternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir '$SAMPLE_ID'/paternal --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_pat.
 mv '$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_pat.Chimeric.out.junction '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.junction
 mv '$SAMPLE_ID'_pat.Chimeric.out.sam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Chimeric.out.sam
@@ -154,7 +154,7 @@ rm '$SAMPLE_ID'_mat.Log.progress.out
 
 echo "Step 11. Aligning to Universal Reference genome (STAR)"
 
-/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_maternal PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_maternal SM:'$SAMPLE_ID'_maternal CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
+/media/shared_data/software/STAR/bin/Linux_x86_64/STAR --runThreadN '$THREAD_NO' --runMode alignReads --readFilesIn '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq --genomeDir hg19 --outSAMstrandField intronMotif --outFilterMultimapNmax 30 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --chimSegmentMin 15 --outMultimapperOrder Random --outSAMunmapped Within --outSAMattrIHstart 0 --outFilterIntronMotifs RemoveNoncanonicalUnannotated --sjdbOverhang 48 --outFilterMismatchNmax 6 --outSAMattributes NH nM NM MD HI --outSAMattrRGline  ID:'$SAMPLE_ID'_ref PU:Illumina PL:Illumina LB:'$SAMPLE_ID'_ref SM:'$SAMPLE_ID'_ref CN:Seq_centre --outSAMtype BAM SortedByCoordinate --outFileNamePrefix '$SAMPLE_ID'_ref.
 
 mv '$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'_ref.Chimeric.out.junction '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Chimeric.out.junction
@@ -303,8 +303,8 @@ python /media/shared_data/software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE
 #################################
 
 echo "Step 27. Sorting BAMs by position"
-media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
-media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G 1152/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
 
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
