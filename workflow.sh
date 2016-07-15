@@ -1,5 +1,5 @@
 # USAGE:   sh SCRIPT.sh ALL_SAMPLEs.txt UK10K_SAMPLES.txt
-# This should all be excuted from the /pvfs2/ directory.
+# This should all be excuted from the /home/ubuntu/ directory.
 THREAD_NO=$3
 ALL_SAMPLES=$1
 UK10K_SAMPLES=$2
