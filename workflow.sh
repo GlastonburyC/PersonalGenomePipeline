@@ -6,6 +6,8 @@ UK10K_SAMPLES=$2
 FML='"chr"'
 VAR="'{if(\$0 !~ /^#/) print $FML\$0; else print \$0}'"
 
+VAR2="'{ if (a[\$2]++ == 0) print \$0; }'"
+
 while read line ; do
 
 ## check if line exist in CHECK_FILE; then assign result to variable
@@ -258,8 +260,8 @@ grep "^#" '$SAMPLE_ID'.maternal.vcf > '$SAMPLE_ID'.maternal.vcf2
 grep "^#" '$SAMPLE_ID'.paternal.vcf > '$SAMPLE_ID'.paternal.vcf2
 
 # Some variants will overlap contexts/position when lifted over - remove duplicates to prevent ASEReadCounter failing.
-awk '{ if (a[$2]++ == 0) print $0; }' "$@" '$SAMPLE_ID'.paternal.vcf >> '$SAMPLE_ID'.paternal.vcf2
-awk '{ if (a[$2]++ == 0) print $0; }' "$@" '$SAMPLE_ID'.maternal.vcf >> '$SAMPLE_ID'.maternal.vcf2
+awk '$VAR2' "$@" '$SAMPLE_ID'.paternal.vcf >> '$SAMPLE_ID'.paternal.vcf2
+awk '$VAR2' "$@" '$SAMPLE_ID'.maternal.vcf >> '$SAMPLE_ID'.maternal.vcf2
 
 mv '$SAMPLE_ID'.paternal.vcf2 '$SAMPLE_ID'.paternal.vcf
 mv '$SAMPLE_ID'.maternal.vcf2 '$SAMPLE_ID'.maternal.vcf
