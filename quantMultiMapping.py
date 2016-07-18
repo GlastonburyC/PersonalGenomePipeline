@@ -15,7 +15,7 @@ total=0
 for snp in consolidated_ase:
 	line=snp.split('\t')
 	chr=line[0]+"_maternal"
-	for entry in mat.fetch(chr,int(line[1])-1,int(line[1])+1):
+	for entry in mat.fetch(chr,int(line[1])-1,int(line[1])):
 		if entry.tags[0][1] > 1:
 			NH+=1
 			total+=1
@@ -41,7 +41,7 @@ total=0
 for snp in consolidated_ase:
 	line=snp.split('\t')
 	chr=line[0]+"_paternal"
-	for entry in pat.fetch(chr,int(line[1])-1,int(line[1])+1):
+	for entry in pat.fetch(chr,int(line[1])-1,int(line[1])):
 		if entry.tags[0][1] > 1:
 			NH+=1
 			total+=1
