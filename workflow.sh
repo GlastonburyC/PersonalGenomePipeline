@@ -26,6 +26,15 @@ echo '#!/bin/bash
 # number of nodes 
 #SBATCH -n '$THREAD_NO' 
 
+TMPDIR=/mnt/
+
+cd $TMPDIR
+rm -r *
+cp -r /media/shared_data/data/adipose_samples/'$SAMPLE_ID' .
+
+cp -r /home/ubuntu/hg19 .
+cp /home/ubuntu/gencode.v19.annotation.gtf .
+
 echo "Step 1. Sorting BAM file"
 /media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G -n '$line'/'$line'_sorted.bam -o '$line'/'$line'_sorted.bam.sorted
 echo "Step 2. BAM >> fastq"
@@ -79,6 +88,15 @@ echo '#!/bin/bash
 #SBATCH --mail-user=craig.glastonbury@kcl.ac.uk
 
 # Only edit the genome using variants with a GQ score > 30.
+
+TMPDIR=/mnt/
+
+cd $TMPDIR
+rm -r *
+cp -r /media/shared_data/data/adipose_samples/'$SAMPLE_ID' .
+
+cp -r /home/ubuntu/hg19 .
+cp /home/ubuntu/gencode.v19.annotation.gtf .
 
 echo "Step 1. Filtering VCF for GQ < 30"
 python /media/shared_data/software/PersonalGenomePipeline/filterVariantGQ.py '$SAMPLE_ID'
