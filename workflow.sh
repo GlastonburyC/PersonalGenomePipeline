@@ -372,6 +372,19 @@ rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.pat.gtf
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.mat.gtf
 
+
+rm '$SAMPLE_ID'/'$SAMPLE_ID'_1.fastq
+rm '$SAMPLE_ID'/'$SAMPLE_ID'_2.fastq
+rm '$SAMPLE_ID'/'$SAMPLE_ID'_.vcf
+
+rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.bam
+rm '$SAMPLE_ID'/maternal/*maternal.fa
+rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
+
+rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam
+rm '$SAMPLE_ID'/paternal/*paternal.fa
+rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
+
 echo "Step 37. Successfully completed."
 
 rm '$SAMPLE_ID'.not_lifted.txt ' > $line.both.sh
