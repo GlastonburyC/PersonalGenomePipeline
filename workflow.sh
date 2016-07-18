@@ -403,6 +403,8 @@ rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam
 rm '$SAMPLE_ID'/paternal/*paternal.fa
 rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
+mkdir /media/shared_data/data/out/'$SAMPLE_ID'
+cp -r '$SAMPLE_ID' /media/shared_data/data/out/'$SAMPLE_ID'
 echo "Step 37. Successfully completed."
 
 rm '$SAMPLE_ID'.not_lifted.txt ' > $line.both.sh
