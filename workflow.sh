@@ -277,15 +277,15 @@ python /media/shared_data/software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_I
 echo "Step 18. Converting VCF to Paternal coordinate system for downstream ASE"
 python /media/shared_data/software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.paternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
-grep "^#" '$SAMPLE_ID'.maternal.vcf > '$SAMPLE_ID'.maternal.vcf2
-grep "^#" '$SAMPLE_ID'.paternal.vcf > '$SAMPLE_ID'.paternal.vcf2
+grep "^#" '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf > '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf2
+grep "^#" '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf > '$SAMPLE_ID'/paternal'$SAMPLE_ID'.paternal.vcf2
 
 # Some variants will overlap contexts/position when lifted over - remove duplicates to prevent ASEReadCounter failing.
-awk '$VAR2' "$@" '$SAMPLE_ID'.paternal.vcf >> '$SAMPLE_ID'.paternal.vcf2
-awk '$VAR2' "$@" '$SAMPLE_ID'.maternal.vcf >> '$SAMPLE_ID'.maternal.vcf2
+awk '$VAR2' "$@" '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf2
+awk '$VAR2' "$@" '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf2
 
-mv '$SAMPLE_ID'.paternal.vcf2 '$SAMPLE_ID'.paternal.vcf
-mv '$SAMPLE_ID'.maternal.vcf2 '$SAMPLE_ID'.maternal.vcf
+mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf2 '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
+mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf2 '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 
 # This script swaps the REF and ALT alleles according to whether its the maternal or paternal haplotype.
 echo "Step 19. Swapping Alleles to reflect reference according to haplotype"
