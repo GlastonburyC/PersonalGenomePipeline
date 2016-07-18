@@ -137,35 +137,92 @@ def translateReadCord(mline,PARENT):
 	return mline
 
 def compareHapReads(mline,pline):
-	flag=''
-	if mline.qname == pline.qname:
-		if checkEditDistance(pline.tags[2][1],mline.tags[2][1]) == 0:
-			 y = random.random()
-			 if y <0.5:
-			 	mline.tags+=[('HT','random')]
-			 	to_write=mline
-			 	flag='M'
-			 else:
-			 	pline.tags+=[('HT','random')]
-			 	to_write=pline
-			 	flag='P'
-		elif checkEditDistance(pline.tags[2][1],mline.tags[2][1]) == 1:
-			pline.tags+=[('HT','best')]
-			to_write=pline
-			flag='P'
-		else:
-			mline.tags+=[('HT','best')]
-			to_write=mline
+	try:
+		mline[0].qname == pline[0].qname
+	except:
+		print('L/L Read names are different!')
+	try:
+		mline[1].qname == pline[1].qname
+	except:
+		print('R/R Read names are different!')
+	try:
+		mline[0].qname == pline[1].qname
+	except:
+		print('L/R Read names are different!')
+	editResultL=checkEditDistance(pline[0].tags[2][1],mline[0].tags[2][1])
+	editResultR=checkEditDistance(pline[1].tags[2][1],mline[1].tags[2][1])
+	try:
+		if editResultL == 0 and editResultR == 0:
+			flag = 'R'
+		elif editResultL == 0 and editResultR == 1:
+			flag = 'P'
+		elif editResultL == 0 and editResultR == 2:
+			flag = 'M'
+		elif editResultL == 1 and editResultR == 0:
+			flag = 'P'
+		elif editResultL == 1 and editResultR == 1:
+			flag = 'P'
+		elif editResultL == 1 and editResultR == 2:
+			flag = 'A'
+		elif editResultL == 2 and editResultR == 1:
+			flag = 'A'
+		elif editResultL == 2 and editResultR == 2:
+			flag = 'M'
+		elif editResultL == 2 and editResultR == 0:
+			flag = 'M'
+	except:
+		raise('Condition violated')
+	if flag == 'R':
+		y = random.random()
+		if y <0.5:
+			mline[0].tags+=[('HT','random')]
+			mline[1].tags+=[('HT','random')]
+			to_writeL=mline[0]
+			to_writeR=mline[1]
 			flag='M'
-	return to_write,flag
+		else:
+			pline[0].tags+=[('HT','random')]
+			pline[1].tags+=[('HT','random')]
+			to_writeL=pline[0]
+			to_writeR=pline[1]
+			flag='P'
+	elif flag == 'P':
+		pline[0].tags+=[('HT','P_best')]
+		pline[1].tags+=[('HT','P_best')]
+		to_writeL=pline[0]
+		to_writeR=pline[1]
+	elif flag == 'M':		
+		mline[0].tags+=[('HT','M_best')]
+		mline[1].tags+=[('HT','M_best')]
+		to_writeL=mline[0]
+		to_writeR=mline[1]
+	elif flag == 'A':		
+		mline[0].tags+=[('HT','Ambiguous')]
+		mline[1].tags+=[('HT','Ambiguous')]
+		to_writeL=mline[0]
+		to_writeR=mline[1]
+	return to_writeL,to_writeR,flag
 
-def compareAndWrite(matr,patr,best_mat,best_pat):
-	to_write,flag = compareHapReads(matr,patr)
+
+def compareAndWrite(matr,patr,best_mat,best_pat,ambig_out):
+	to_writeL,to_writeR,flag = compareHapReads(matr,patr)
+	if flag == 'M':
+		best_mat.write(to_writeL)
+		best_mat.write(to_writeR)
+	elif flag == 'P':
+		best_pat.write(to_writeL)
+		best_pat.write(to_writeR)
+	elif flag == 'A':
+		ambig_out.write(to_writeL)
+		ambig_out.write(to_writeR)
+
+def compareAndWriteSE(matr,patr,best_mat,best_pat):
+	to_write,flag = compareSE(matr,patr)
+	#print flag
 	if flag=='M':
 		best_mat.write(to_write)
 	else:
 		best_pat.write(to_write)
-
 
 ##### END OF FUNCTIONS #####
 
@@ -204,19 +261,18 @@ for pline in pat.fetch(until_eof=True):
 mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam", 'rb')
 pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam", 'rb')
 
-best_mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam','wb',template=mat)
-best_pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam','wb',template=mat)
-
+best_mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.test.bam','wb',template=mat)
+best_pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.test.bam','wb',template=mat)
+ambig_out = pysam.Samfile(sys.argv[1]+'/'+ sys.argv[1]+'.ambiguous.reads.bam','wb',template=mat)
 
 matr = next(mat)
 patr = next(pat)
-
+bit=NULL
 i=1
 j=1
-# Iterate through both mat and pat simultaneously. Iterate through each read entry 
-# (primary and secondary alignment) only extracting primary alignments
-# Translate the pos and mpos of the read on the fly to reference coordinates.
-# Write a consensus BAM file, consisting of the best read, given a haplotype alignment.
+count=0
+# Iterate through both mat and pat
+
 while (i < mat_line_number) and (j < pat_line_number):
 	read_name = matr.qname
 	patr_list = []
@@ -240,22 +296,24 @@ while (i < mat_line_number) and (j < pat_line_number):
 			break
 		j+=1
 	if (len(patr_list) == 2) and (len(matr_list) == 2):
-		matr1=matr_list[0]
-		matr2=matr_list[1]
-		patr1=patr_list[0]
-		patr2=patr_list[1]
-		compareAndWrite(matr1,patr1,best_mat,best_pat)
-		compareAndWrite(matr2,patr2,best_mat,best_pat)
+		compareAndWrite(matr_list,patr_list,best_mat,best_pat,ambig_out)
+		#compareAndWrite(matr2,patr2,best_mat,best_pat)
 	elif (len(patr_list) == 1) and (len(matr_list) == 1):
 		matr1=matr_list[0]
 		patr1=patr_list[0]
 		if (matr1.is_read1 and patr1.is_read1) or (matr1.is_read2 and patr1.is_read2):
 			#matr1=translateReadCord(matr1,PARENT='M')
 			#patr1=translateReadCord(patr1,PARENT='P')
-			compareAndWrite(matr1,patr1,best_mat,best_pat)
-
+			compareAndWriteSE(matr1,patr1,best_mat,best_pat)
+		else:
+			count+=1
+			print count
+	else:
+		count+=1
+		print count
 best_pat.close()
 best_mat.close()
+ambig_out.close()
 
 ID=str(sys.argv[1])
 vcf_reader = vcf.Reader(open(sys.argv[1]+'/'+sys.argv[1]+'.vcf.gz','r'))
