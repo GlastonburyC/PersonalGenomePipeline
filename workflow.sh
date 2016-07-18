@@ -78,6 +78,9 @@ rm '$line'/'$line'_2.fastq
 
 rm '$line'/reference/'$line'.filtered.bam' > $line.refOnly.sh
 
+mkdir /media/shared_data/data/out/'$SAMPLE_ID'
+cp -r '$SAMPLE_ID' /media/shared_data/data/out/'$SAMPLE_ID'
+
 else
 echo '#!/bin/bash 
 # 
