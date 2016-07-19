@@ -291,8 +291,8 @@ mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf2 '$SAMPLE_ID'/maternal/'$SAMP
 echo "Step 19. Swapping Alleles to reflect reference according to haplotype"
 python /media/shared_data/software/PersonalGenomePipeline/haplotypeVCFAlleles.py '$SAMPLE_ID' '$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'.paternal.vcf
 #
-mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf.maternal2.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
-mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf.paternal2.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
+mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal2.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
+mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal2.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
 echo "Step 20. Creating SequenceDict (picard)"
 java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar CreateSequenceDictionary R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.dict
