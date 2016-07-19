@@ -408,9 +408,9 @@ rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
 mkdir /media/shared_data/data/out/'$SAMPLE_ID'
 
-rm '$SAMPLE_ID'.not_lifted.txt ' > $line.both.sh
+rm '$SAMPLE_ID'.not_lifted.txt
 cp -r '$SAMPLE_ID' /media/shared_data/data/out/'$SAMPLE_ID'
-echo "Step 37. Successfully completed."
+echo "Step 37. Successfully completed." ' > $line.both.sh
 
 fi
 done < ${ALL_SAMPLES}
