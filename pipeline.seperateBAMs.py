@@ -136,6 +136,41 @@ def translateReadCord(mline,PARENT):
 		mline.template_length=mline.mpos-mline.pos-49
 	return mline
 
+def compareSE(mline,pline):
+	try:
+		mline.qname == pline.qname
+	except:
+		raise('SE Read names are different!')
+	editResult=checkEditDistance(pline.tags[2][1],mline.tags[2][1])
+	if editResult == 0:
+		flag = 'R'
+	elif editResult == 1:
+		flag = 'P'
+	elif editResult == 2:
+		flag = 'M'
+	else:
+		exit('Condition violated')
+	if flag == 'R':
+		y = random.random()
+		if y <0.5:
+			mline.tags+=[('HT','random')]
+			to_write=mline
+			flag='M'
+		else:
+			pline.tags+=[('HT','random')]
+			to_write=pline
+			flag='P'
+	elif flag == 'P':
+	 	pline.tags+=[('HT','P_best')]
+		to_write=pline
+	elif flag == 'M':		
+	 	mline.tags+=[('HT','M_best')]
+		to_write=mline
+	elif flag == 'A':		
+	 	mline.tags+=[('HT','Ambiguous')]
+		to_write=mline
+	return to_write,flag
+
 def compareHapReads(mline,pline):
 	try:
 		mline[0].qname == pline[0].qname
