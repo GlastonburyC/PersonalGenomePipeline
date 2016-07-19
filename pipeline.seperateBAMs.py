@@ -296,8 +296,8 @@ for pline in pat.fetch(until_eof=True):
 mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+"_mat.Aligned.sortedByCoord.out.bam", 'rb')
 pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+"_pat.Aligned.sortedByCoord.out.bam", 'rb')
 
-best_mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.test.bam','wb',template=mat)
-best_pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.test.bam','wb',template=mat)
+best_mat = pysam.Samfile(sys.argv[1]+'/'+'maternal/'+sys.argv[1]+'.consensus.mat.bam','wb',template=mat)
+best_pat = pysam.Samfile(sys.argv[1]+'/'+'paternal/'+sys.argv[1]+'.consensus.pat.bam','wb',template=mat)
 ambig_out = pysam.Samfile(sys.argv[1]+'/'+ sys.argv[1]+'.ambiguous.reads.bam','wb',template=mat)
 
 matr = next(mat)
