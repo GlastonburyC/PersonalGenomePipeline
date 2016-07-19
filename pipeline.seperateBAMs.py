@@ -267,7 +267,6 @@ ambig_out = pysam.Samfile(sys.argv[1]+'/'+ sys.argv[1]+'.ambiguous.reads.bam','w
 
 matr = next(mat)
 patr = next(pat)
-bit=NULL
 i=1
 j=1
 count=0
