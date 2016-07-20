@@ -6,7 +6,11 @@ UK10K_SAMPLES=$2
 FML='"chr"'
 VAR="'{if(\$0 !~ /^#/) print $FML\$0; else print \$0}'"
 
-VAR2="'{if (a[$2]++ == 0) print $0; }'"
+VAR2="'{if (a[\$2]++ == 0) print \$0; }'"
+
+VAR3="'/^#/ {print}'"
+
+VAR4="'/^#/ {next} {print \$0}'"
 
 while read line ; do
 
@@ -278,11 +282,11 @@ echo "Step 18. Converting VCF to Paternal coordinate system for downstream ASE"
 python /media/shared_data/software/CrossMap-0.2.3/bin/CrossMap.py vcf '$SAMPLE_ID'/'$SAMPLE_ID'.paternal.edit.chain '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
 
-awk '/^#/ {print}' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf > '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.header.vcf
-awk '/^#/ {print}' '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf > '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.header.vcf
+awk '$VAR3' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf > '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.header.vcf
+awk '$VAR3' '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf > '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.header.vcf
 
-awk '/^#/ {next} {print $0}' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf  > '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.NOheader.vcf
-awk '/^#/ {next} {print $0}' '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf  > '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.NOheader.vcf
+awk '$VAR4' '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf  > '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.NOheader.vcf
+awk '$VAR4' '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf  > '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.NOheader.vcf
 
  awk '$VAR2' "$@" '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.NOheader.vcf >> '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.header.vcf
  awk '$VAR2' "$@" '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.NOheader.vcf >> '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.header.vcf
