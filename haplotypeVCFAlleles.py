@@ -4,7 +4,7 @@ import sys
 
 vcf_mat = vcf.Reader(open(sys.argv[1]+'/maternal/'+sys.argv[2],'r'))
 
-vcf_mat_out = vcf.Writer(open(sys.argv[1]+'/maternal/'+sys.argv[2]+'.maternal2.vcf','w'),vcf_mat)
+vcf_mat_out = vcf.Writer(open(sys.argv[1]+'/maternal/'+sys.argv[1]+'.maternal2.vcf','w'),vcf_mat)
 
 for record in vcf_mat:
 	if record.genotype(sys.argv[1])['GT'].split('|')[1] == '1':
@@ -23,7 +23,7 @@ vcf_mat_out.close()
 import vcf 
 
 vcf_pat = vcf.Reader(open(sys.argv[1]+'/paternal/'+sys.argv[3],'r'))
-vcf_pat_out = vcf.Writer(open(sys.argv[1]+'/paternal/'+sys.argv[3]+'.paternal2.vcf','w'),vcf_pat)
+vcf_pat_out = vcf.Writer(open(sys.argv[1]+'/paternal/'+sys.argv[1]+'.paternal2.vcf','w'),vcf_pat)
 
 for record in vcf_pat:
 	if record.genotype(sys.argv[1])['GT'].split('|')[0] == '1':
