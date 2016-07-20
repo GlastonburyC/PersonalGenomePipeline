@@ -352,6 +352,12 @@ java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/pater
    #for each haplotype, consolidated into a single ASE file per individual.
 
 
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
+/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
+
+mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
+mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
+
 echo "Step 26. Indexing BAMs "
 /media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
 /media/shared_data/software/samtools-1.3.1/samtools index '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
@@ -363,13 +369,6 @@ python /media/shared_data/software/PersonalGenomePipeline/quantMultiMapping.py '
 echo "Step 26b. Converting Maternal and Paternal coordinates onto reference-base"
 python /media/shared_data/software/PersonalGenomePipeline/ASERefCord.py '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.ASE.mat.ref.multi.txt '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.ref.multi.txt '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf '$SAMPLE_ID'.maternal.alleles.csv '$SAMPLE_ID'.paternal.alleles.csv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'
 #################################
-
-echo "Step 27. Sorting BAMs by position"
-/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted
-/media/shared_data/software/samtools-1.3.1/samtools sort -@ 6 -m 10G '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted
-
-mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/maternal/'$SAMPLE_ID'_mat.Aligned.sortedByCoord.out.bam
-mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam.sorted '$SAMPLE_ID'/paternal/'$SAMPLE_ID'_pat.Aligned.sortedByCoord.out.bam
 
 echo "Step 30. Producing file ASE output"
 Rscript /media/shared_data/software/PersonalGenomePipeline/ASERefOut.R '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.ref.csv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.ref.csv '$SAMPLE_ID'/'$SAMPLE_ID'.ASE.csv
