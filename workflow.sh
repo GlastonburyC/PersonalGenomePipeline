@@ -74,6 +74,19 @@ echo "Step 6. Filtering aligned BAM"
 echo "Step 7. Calculating gene counts"
 /media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T '$THREAD_NO' -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
 
+# Calculate ASE for reference genome 
+
+
+echo "Step 8. Calculating Universal Reference ASE"
+
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam O='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam R=hg19/hg19.all.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+
+samtools index '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam
+
+java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R hg19/hg19.all.fa -T ASEReadCounter -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.ASE.csv -I '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam -sites '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+
+
+
 rm '$line'/'$line'_sorted.bam.sorted
 rm '$line'/'$line'_sorted.bam 
 rm -r '$line'_ref._STARtmp
@@ -345,6 +358,16 @@ java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/mater
 
 echo "Step 25. Performing ASEReadCounter - Paternal"
 java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa -T ASEReadCounter -o '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.ASE.pat.csv -I '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam -sites '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+
+# Calculate ASE for reference genome 
+
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam O='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam R=hg19/hg19.all.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+
+samtools index '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam
+
+java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R hg19/hg19.all.fa -T ASEReadCounter -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.ASE.csv -I '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam -sites '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+
+
 
    #Currently, the ASE output is relative to the haplotype reference used (Maternal reference or paternal reference) 
    #i.e. REF in ASE.mat.csv = maternal allele etc.To assess REF Bias (which we should not expect due to using Personal genomes), 
