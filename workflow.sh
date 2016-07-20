@@ -294,8 +294,6 @@ awk '$VAR4' '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf  > '$SAMPLE_ID'/pate
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.header.vcf '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.vcf
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.header.vcf '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
-rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.header.vcf
-rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.header.vcf
 rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.NOheader.vcf
 rm '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.NOheader.vcf
 
