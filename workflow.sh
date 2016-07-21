@@ -93,10 +93,10 @@ rm -r '$line'_ref._STARtmp
 rm '$line'/'$line'_1.fastq
 rm '$line'/'$line'_2.fastq
 
-rm '$line'/reference/'$line'.filtered.bam'
+rm '$line'/reference/'$line'.filtered.bam
 
 mkdir /media/shared_data/data/out/'$line'
-cp -r '$line' /media/shared_data/data/out/'$line' > $line.refOnly.sh
+cp -r '$line' /media/shared_data/data/out/'$line' '> $line.refOnly.sh
 
 else
 echo '#!/bin/bash 
