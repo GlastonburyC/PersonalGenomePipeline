@@ -20,5 +20,8 @@ For each read, simply choose the read which has the least number of mismatches, 
 ##Output
 
 1. Personalised genome Allele specific expression file.
+2. Universal reference Allele specific expression file for comparison
 2. Gene level counts using the personalised genomes 
 3. Gene level counts using the universal reference genome
+
+Each personalised sample weighs in at approximately 10Gb.
