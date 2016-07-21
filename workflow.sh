@@ -74,19 +74,6 @@ echo "Step 6. Filtering aligned BAM"
 echo "Step 7. Calculating gene counts"
 /media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T '$THREAD_NO' -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
 
-# Calculate ASE for reference genome 
-
-
-echo "Step 8. Calculating Universal Reference ASE"
-
-java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$line'/reference/'$line'.filtered.bam O='$line'/reference/'$line'.filtered.sorted.bam R=hg19/hg19.all.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
-
-samtools index '$line'/reference/'$line'.filtered.sorted.bam
-
-java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R hg19/hg19.all.fa -T ASEReadCounter -o '$line'/reference/'$line'.ASE.csv -I '$line'/reference/'$line'.filtered.sorted.bam -sites '$line'/'$line'.hets.GATK.sorted.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
-
-
-
 rm '$line'/'$line'_sorted.bam.sorted
 rm '$line'/'$line'_sorted.bam 
 rm -r '$line'_ref._STARtmp
