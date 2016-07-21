@@ -8,7 +8,7 @@ Executing the following will create SLURM sbatch submission scripts for each ind
 
 Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, based on edit distance.
 
-For each read, simply choose the read which has the least number of mismatches, aligned to either haplotype. As both reads are the same, the alignment with the least mismatches should be consider the optimal choice.
+For each read, simply choose the read which has the least number of mismatches, aligned to either haplotype. As both reads are the same, the alignment with the least mismatches should be considered the optimal choice.
 
 0. Align to parental haplotypes using phased hets with GQ > 30. Also align to the reference genome for comparison.
 1. Create paternal and maternal vcfs
