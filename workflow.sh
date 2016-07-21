@@ -83,7 +83,7 @@ rm '$line'/'$line'_2.fastq
 rm '$line'/reference/'$line'.filtered.bam
 
 mkdir /media/shared_data/data/out/'$line'
-cp -r '$line' /media/shared_data/data/out/'$line' '> $line.refOnly.sh
+cp -r '$line' /media/shared_data/data/out/ '> $line.refOnly.sh
 
 else
 echo '#!/bin/bash 
@@ -440,7 +440,7 @@ rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 mkdir /media/shared_data/data/out/'$SAMPLE_ID'
 
 rm '$SAMPLE_ID'.not_lifted.txt
-cp -r '$SAMPLE_ID' /media/shared_data/data/out/'$SAMPLE_ID'
+cp -r '$SAMPLE_ID' /media/shared_data/data/out/
 echo "Step 37. Successfully completed." ' > $line.both.sh
 
 fi
