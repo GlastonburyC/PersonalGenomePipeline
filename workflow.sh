@@ -34,7 +34,7 @@ TMPDIR=/mnt/
 
 cd $TMPDIR
 rm -r *
-cp -r /media/shared_data/data/adipose_samples/'$SAMPLE_ID' .
+cp -r /media/shared_data/data/adipose_samples/'$line' .
 
 cp -r /home/ubuntu/hg19 .
 cp /home/ubuntu/gencode.v19.annotation.gtf .
@@ -79,11 +79,11 @@ echo "Step 7. Calculating gene counts"
 
 echo "Step 8. Calculating Universal Reference ASE"
 
-java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam O='$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam R=hg19/hg19.all.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$line'/reference/'$line'.filtered.bam O='$line'/reference/'$line'.filtered.sorted.bam R=hg19/hg19.all.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
 
-samtools index '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam
+samtools index '$line'/reference/'$line'.filtered.sorted.bam
 
-java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R hg19/hg19.all.fa -T ASEReadCounter -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.ASE.csv -I '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam -sites '$SAMPLE_ID'/'$SAMPLE_ID'.hets.GATK.sorted.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
+java -jar /media/shared_data/software/GenomeAnalysisTK.jar -R hg19/hg19.all.fa -T ASEReadCounter -o '$line'/reference/'$line'.ASE.csv -I '$line'/reference/'$line'.filtered.sorted.bam -sites '$line'/'$line'.hets.GATK.sorted.vcf -dels -U ALLOW_N_CIGAR_READS -S SILENT
 
 
 
@@ -93,10 +93,10 @@ rm -r '$line'_ref._STARtmp
 rm '$line'/'$line'_1.fastq
 rm '$line'/'$line'_2.fastq
 
-rm '$line'/reference/'$line'.filtered.bam' > $line.refOnly.sh
+rm '$line'/reference/'$line'.filtered.bam'
 
-mkdir /media/shared_data/data/out/'$SAMPLE_ID'
-cp -r '$SAMPLE_ID' /media/shared_data/data/out/'$SAMPLE_ID'
+mkdir /media/shared_data/data/out/'$line'
+cp -r '$line' /media/shared_data/data/out/'$line' > $line.refOnly.sh
 
 else
 echo '#!/bin/bash 
