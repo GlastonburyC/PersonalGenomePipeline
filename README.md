@@ -1,8 +1,10 @@
 # PersonalGenomePipeline
 
-Executing the following will create SLURM sbatch submission scripts for each individual. It will create different scripts depending on whether the sample has both UK10K sequence data and RNA-seq, or just RNA-seq
+Executing the following will create SLURM sbatch submission scripts for each individual. It will create different scripts depending on whether the sample has both UK10K WGS data and RNA-seq, or just RNA-seq
 
-``` ./workflow.sh all_samples UK10K_samples no_threads ```
+``` ./workflow.sh all_samples.txt UK10K_samples.txt <no_threads> ```
+
+Where all samples contains the entire RNA-seq list of individuals for a tissue (same as qc_X_freeze..) and UK10K_samples contains those IDs that have WGS.
 
 ## Functionality
 
