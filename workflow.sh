@@ -446,6 +446,10 @@ rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.bam
 rm '$SAMPLE_ID'/paternal/*paternal.fa
 rm '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.vcf
 
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
+rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam
+rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+
 mkdir /media/shared_data/data/out/'$SAMPLE_ID'
 
 rm '$SAMPLE_ID'.not_lifted.txt
