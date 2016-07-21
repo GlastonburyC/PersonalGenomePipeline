@@ -1,5 +1,9 @@
 # PersonalGenomePipeline
 
+Executing the following will create SLURM sbatch submission scripts for each individual. It will create different scripts depending on whether the sample has both UK10K sequence data and RNA-seq, or just RNA-seq
+
+``` ./workflow.sh all_samples UK10K_samples no_threads ```
+
 ## Functionality
 
 Given Two BAM files derived from mapping reads to Maternal and Paternal haplotypes, select the best read that maps to either, based on edit distance.
