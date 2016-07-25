@@ -330,8 +330,8 @@ mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted2.bam '$SAMPL
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted2.bam '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 
 echo "Step 22. Ordering SAM files"
-java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
-java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/paternal/'$SAMPLE_ID'.paternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true VALIDATION_STRINGENCY=SILENT
+java -jar /media/shared_data/software/picard-tools-2.4.1/picard.jar ReorderSam I='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam O='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 R='$SAMPLE_ID'/maternal/'$SAMPLE_ID'.maternal.renamed.fa ALLOW_CONTIG_LENGTH_DISCORDANCE=true VALIDATION_STRINGENCY=SILENT
 
 mv '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam2 '$SAMPLE_ID'/paternal/'$SAMPLE_ID'.consensus.pat.filtered.sorted.readGroup.bam
 mv '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam2 '$SAMPLE_ID'/maternal/'$SAMPLE_ID'.consensus.mat.filtered.sorted.readGroup.bam
