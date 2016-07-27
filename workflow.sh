@@ -440,6 +440,9 @@ rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 mkdir /media/shared_data/data/out/'$SAMPLE_ID'
 
 rm '$SAMPLE_ID'.not_lifted.txt
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
+rm '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
+
 cp -r '$SAMPLE_ID' /media/shared_data/data/out/
 echo "Step 37. Successfully completed." ' > $line.both.sh
 
