@@ -3,6 +3,8 @@
 THREAD_NO=$3
 ALL_SAMPLES=$1
 UK10K_SAMPLES=$2
+OUT_DIR=$4
+
 FML='"chr"'
 VAR="'{if(\$0 !~ /^#/) print $FML\$0; else print \$0}'"
 
@@ -82,8 +84,8 @@ rm '$line'/'$line'_2.fastq
 
 rm '$line'/reference/'$line'.filtered.bam
 
-mkdir /media/shared_data/data/out/'$line'
-cp -r '$line' /media/shared_data/data/out/ '> $line.refOnly.sh
+mkdir /media/shared_data/data/'$OUT_DIR'/'$line'
+cp -r '$line' /media/shared_data/data/'$OUT_DIR'/ '> $line.'$OUT_DIR'.refOnly.sh
 
 else
 echo '#!/bin/bash 
@@ -437,14 +439,14 @@ rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf.gz
 rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.sorted.bam
 rm '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
-mkdir /media/shared_data/data/out/'$SAMPLE_ID'
+mkdir /media/shared_data/data/'$OUT_DIR'/'$SAMPLE_ID'
 
 rm '$SAMPLE_ID'.not_lifted.txt
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.vcf
 rm '$SAMPLE_ID'/'$SAMPLE_ID'.hets.phased.vcf
 
-cp -r '$SAMPLE_ID' /media/shared_data/data/out/
-echo "Step 37. Successfully completed." ' > $line.both.sh
+cp -r '$SAMPLE_ID' /media/shared_data/data/'$OUT_DIR'/
+echo "Step 37. Successfully completed." ' > $line.'$OUT_DIR'.both.sh
 
 fi
 done < ${ALL_SAMPLES}
