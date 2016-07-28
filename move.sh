@@ -13,16 +13,16 @@ while read line ; do
 
 SAMPLE_ID=$line
 
-if [ ! -d /home/ubuntu/media/data/blood_samples/"$SAMPLE_ID" ]; then
+if [ ! -d /media/data/blood_samples/"$SAMPLE_ID" ]; then
 
-	mkdir /home/ubuntu/media/data/blood_samples/"$SAMPLE_ID"
-	mkdir /home/ubuntu/media/data/blood_samples/"$SAMPLE_ID"/reference
+	mkdir /media/data/blood_samples/"$SAMPLE_ID"
+	mkdir /media/data/blood_samples/"$SAMPLE_ID"/reference
 
-	mv /home/ubuntu/media/data/BLOOD/"$SAMPLE_ID"_sorted.bam /home/ubuntu/media/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+	mv /media/data/BLOOD/"$SAMPLE_ID"_sorted.bam /media/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 else
 
-mv /home/ubuntu/media/data/BLOOD/"$SAMPLE_ID"_sorted.bam /home/ubuntu/media/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+mv /media/data/BLOOD/"$SAMPLE_ID"_sorted.bam /media/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 fi
 
