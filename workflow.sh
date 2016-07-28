@@ -34,7 +34,7 @@ TMPDIR=/mnt/
 
 cd $TMPDIR
 rm -r *
-cp -r /media/shared_data/data/adipose_samples/'$line' .
+cp -r /media/shared_data/data/blood_samples/'$line' .
 
 cp -r /home/ubuntu/hg19 .
 cp /home/ubuntu/gencode.v19.annotation.gtf .
