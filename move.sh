@@ -13,16 +13,16 @@ while read line ; do
 
 SAMPLE_ID=$line
 
-if [ ! -d /media/shared_data/data/blood_samples/"$SAMPLE_ID" ]; then
+if [ ! -d /media/shared_data/data/skin_vcfs/"$SAMPLE_ID" ]; then
 
-	mkdir /media/shared_data/data/blood_samples/"$SAMPLE_ID"
-	mkdir /media/shared_data/data/blood_samples/"$SAMPLE_ID"/reference
+	mkdir /media/shared_data/data/skin_vcfs/"$SAMPLE_ID"
+	mkdir /media/shared_data/data/skin_vcfs/"$SAMPLE_ID"/reference
 
-	mv /media/shared_data/data/BLOOD/"$SAMPLE_ID"_sorted.bam /media/shared_data/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+	mv /media/shared_data/data/SKIN/"$SAMPLE_ID"_sorted.bam /media/shared_data/data/skin_vcfs/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 else
 
-mv /media/shared_data/data/BLOOD/"$SAMPLE_ID"_sorted.bam /media/shared_data/data/blood_samples/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
+mv /media/shared_data/data/SKIN/"$SAMPLE_ID"_sorted.bam /media/shared_data/data/skin_vcfs/"$SAMPLE_ID"/"$SAMPLE_ID"_sorted.bam
 
 fi
 
