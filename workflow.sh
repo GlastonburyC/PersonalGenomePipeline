@@ -71,7 +71,7 @@ rm '$line'_ref.Log.out
 rm '$line'_ref.Log.progress.out
 
 echo "Step 6. Filtering aligned BAM"
-/media/shared_data/software/samtools-1.3.1/samtools view -@ '$THREAD_NO' -b -F4 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ '$THREAD_NO' -b -f3 -q 30 '$line'/reference/'$line'_ref.Aligned.sortedByCoord.out.bam -o '$line'/reference/'$line'.filtered.bam
 
 echo "Step 7. Calculating gene counts"
 /media/shared_data/software/subread-1.5.0-p3-Linux-x86_64/bin/featureCounts -p -T '$THREAD_NO' -a gencode.v19.annotation.gtf -o '$line'/reference/'$line'.GeneCount_Ref.txt '$line'/reference/'$line'.filtered.bam
@@ -212,7 +212,7 @@ rm '$SAMPLE_ID'/paternal/SAindex
 
 
 echo "Step 12. Filtering BAM file"
-/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -F4 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
+/media/shared_data/software/samtools-1.3.1/samtools view -@ 6 -b -f3 -q 30 '$SAMPLE_ID'/reference/'$SAMPLE_ID'_ref.Aligned.sortedByCoord.out.bam -o '$SAMPLE_ID'/reference/'$SAMPLE_ID'.filtered.bam
 
 ## Produce consensus bams, in which the best read per haplotype is selected.
 
